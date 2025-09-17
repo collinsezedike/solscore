@@ -1,3 +1,5 @@
+// anchor/programs/solscore/src/state/bet.rs
+
 use anchor_lang::prelude::*;
 
 #[account]

@@ -1,3 +1,5 @@
+// anchor/programs/solscore/src/lib.rs
+
 pub mod instructions;
 pub mod state;
 
