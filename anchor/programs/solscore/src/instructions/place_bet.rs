@@ -1,18 +1,96 @@
-// anchor/programs/solscore/src/instructions/place_bet.rs
-
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{Mint, Token, TokenAccount},
+    token::{self, Mint, Token, TokenAccount, Transfer},
 };
 
 use crate::state::{Bet, Market};
 
-pub fn _place_bet(_ctx: Context<PlaceBet>) -> Result<()> {
+pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result<()> {
+    let market = &mut ctx.accounts.market;
+    let bet = &mut ctx.accounts.bet;
+    let user = &ctx.accounts.user;
+    let vault = &ctx.accounts.vault;
+    let user_token_account = &ctx.accounts.user_token_account;
+    let token_program = &ctx.accounts.token_program;
+
+    // Validation Rule 1: Market must exist and be open
+    require!(!market.is_closed, BettingError::MarketClosed);
+
+    // Validation Rule 2: Market must not be resolved
+    require!(!market.is_resolved, BettingError::MarketResolved);
+
+    // Validation Rule 3: Stake amount > 0
+    require!(amount > 0, BettingError::InvalidBetAmount);
+
+    // Validation Rule 4: User must have sufficient USDC balance
+    require!(
+        user_token_account.amount >= amount,
+        BettingError::InsufficientBalance
+    );
+
+    // Validate team_index is within bounds
+    require!(
+        (team_index as usize) < market.teams.len(),
+        BettingError::InvalidTeamIndex
+    );
+
+    // Validate team_index is within odds bounds
+    require!(
+        (team_index as usize) < market.odds.len(),
+        BettingError::InvalidTeamIndex
+    );
+
+    // Get current timestamp
+    let clock = Clock::get()?;
+    let current_timestamp = clock.unix_timestamp;
+
+    // Calculate payout amount using fixed odds
+    let odds = market.odds[team_index as usize];
+    let payout_amount = amount
+        .checked_mul(odds)
+        .ok_or(BettingError::MathOverflow)?;
+
+    // Initialize bet account with all required data
+    bet.user = user.key();
+    bet.market = market.key();
+    bet.team_index = team_index;
+    bet.amount = amount;
+    bet.claimed = false;
+    bet.payout_amount = Some(payout_amount);
+    bet.timestamp = current_timestamp;
+    bet.claimed_at = None;
+    bet.bump = ctx.bumps.bet;
+
+    // Transfer USDC from user to vault
+    let transfer_accounts = Transfer {
+        from: user_token_account.to_account_info(),
+        to: vault.to_account_info(),
+        authority: user.to_account_info(),
+    };
+    let transfer_ctx = CpiContext::new(token_program.to_account_info(), transfer_accounts);
+    token::transfer(transfer_ctx, amount)?;
+
+    // Update market's total pool
+    market.total_pool = market
+        .total_pool
+        .checked_add(amount)
+        .ok_or(BettingError::MathOverflow)?;
+
+    msg!(
+        "Bet placed: User {}, Market {}, Team Index {}, Amount {}, Payout Amount {}",
+        user.key(),
+        market.key(),
+        team_index,
+        amount,
+        payout_amount
+    );
+
     Ok(())
 }
 
 #[derive(Accounts)]
+#[instruction(team_index: u8, amount: u64)]
 pub struct PlaceBet<'info> {
     #[account(
         init,
@@ -56,4 +134,20 @@ pub struct PlaceBet<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
 
     pub system_program: Program<'info, System>,
+}
+
+#[error_code]
+pub enum BettingError {
+    #[msg("Market is closed for betting")]
+    MarketClosed,
+    #[msg("Market has already been resolved")]
+    MarketResolved,
+    #[msg("Bet amount must be greater than zero")]
+    InvalidBetAmount,
+    #[msg("Insufficient USDC balance")]
+    InsufficientBalance,
+    #[msg("Invalid team index")]
+    InvalidTeamIndex,
+    #[msg("Mathematical overflow")]
+    MathOverflow,
 }

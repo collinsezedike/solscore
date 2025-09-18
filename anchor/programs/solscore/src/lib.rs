@@ -1,5 +1,3 @@
-// anchor/programs/solscore/src/lib.rs
-
 pub mod instructions;
 pub mod state;
 
@@ -24,11 +22,34 @@ pub mod solscore {
         _initialize_market(ctx, league_name, season, teams, odds)
     }
 
-    //Place Bet - victor
+    pub fn place_bet(
+    ctx: Context<PlaceBet>,
+    team_index: u8,
+    amount: u64,
+    ) -> Result<()> {
+        _place_bet(ctx, team_index, amount)
+    }
 
     //Close Market - Niyi/Ebenezer - later on
 
     //Resolve Market - Niyi/Ebenezer - later on
 
     //Claim Payout - collins
+
 }
+
+    #[error_code]
+    pub enum BettingError {
+        #[msg("Market is closed for betting")]
+        MarketClosed,
+        #[msg("Market has already been resolved")]
+        MarketResolved,
+        #[msg("Bet amount must be greater than zero")]
+        InvalidBetAmount,
+        #[msg("Insufficient USDC balance")]
+        InsufficientBalance,
+        #[msg("Invalid team index")]
+        InvalidTeamIndex,
+        #[msg("Mathematical overflow")]
+        MathOverflow,
+    }
