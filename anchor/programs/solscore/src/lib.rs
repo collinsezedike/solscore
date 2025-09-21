@@ -19,7 +19,7 @@ pub mod solscore {
         league_name: String,
         season: String,
         teams: Vec<String>,
-        odds: Vec<u64>
+        odds: Vec<u64>,
     ) -> Result<()> {
         _initialize_market(ctx, league_name, season, teams, odds)
     }

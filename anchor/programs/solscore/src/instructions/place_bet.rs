@@ -1,8 +1,11 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{ associated_token::AssociatedToken, token::{ self, Mint, Token, TokenAccount, Transfer } };
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{self, Mint, Token, TokenAccount, Transfer},
+};
 
 use crate::error::SolscoreError;
-use crate::state::{ Bet, Market };
+use crate::state::{Bet, Market};
 
 pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result<()> {
     let market = &mut ctx.accounts.market;
@@ -22,13 +25,22 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
     require!(amount > 0, SolscoreError::InvalidBetAmount);
 
     // Validation Rule 4: User must have sufficient USDC balance
-    require!(user_token_account.amount >= amount, SolscoreError::InsufficientBalance);
+    require!(
+        user_token_account.amount >= amount,
+        SolscoreError::InsufficientBalance
+    );
 
     // Validate team_index is within bounds
-    require!((team_index as usize) < market.teams.len(), SolscoreError::InvalidTeamIndex);
+    require!(
+        (team_index as usize) < market.teams.len(),
+        SolscoreError::InvalidTeamIndex
+    );
 
     // Validate team_index is within odds bounds
-    require!((team_index as usize) < market.odds.len(), SolscoreError::InvalidTeamIndex);
+    require!(
+        (team_index as usize) < market.odds.len(),
+        SolscoreError::InvalidTeamIndex
+    );
 
     // Get current timestamp
     let clock = Clock::get()?;
@@ -36,7 +48,9 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
 
     // Calculate payout amount using fixed odds
     let odds = market.odds[team_index as usize];
-    let payout_amount = amount.checked_mul(odds).ok_or(SolscoreError::MathOverflow)?;
+    let payout_amount = amount
+        .checked_mul(odds)
+        .ok_or(SolscoreError::MathOverflow)?;
 
     // Initialize bet account with all required data
     bet.user = user.key();
@@ -59,7 +73,10 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
     token::transfer(transfer_ctx, amount)?;
 
     // Update market's total pool
-    market.total_pool = market.total_pool.checked_add(amount).ok_or(SolscoreError::MathOverflow)?;
+    market.total_pool = market
+        .total_pool
+        .checked_add(amount)
+        .ok_or(SolscoreError::MathOverflow)?;
 
     msg!(
         "Bet placed: User {}, Market {}, Team Index {}, Amount {}, Payout Amount {}",
