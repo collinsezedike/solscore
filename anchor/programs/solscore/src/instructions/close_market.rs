@@ -1,8 +1,15 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Market;
+use crate::error::SolscoreError;
 
-pub fn _close_market(_ctx: Context<CloseMarket>) -> Result<()> {
+use crate::state::{Bet, Market};
+
+pub fn _close_market(ctx: Context<CloseMarket>) -> Result<()> {
+    let market = &mut ctx.accounts.market;
+    require!(!market.is_closed, SolscoreError::MarketClosed);
+    require!(market.is_resolved, SolscoreError::MarketNotResolved);
+    market.is_closed=true;
+    msg!("Market closed for betting: {} {}", market.league_name, market.season);
     Ok(())
 }
 
@@ -12,7 +19,8 @@ pub struct CloseMarket<'info> {
         mut,
         has_one = admin,
         seeds = [b"market", market.league_name.as_bytes(), market.season.as_bytes()],
-        bump = market.bump
+        bump = market.bump,
+        close=admin
     )]
     pub market: Account<'info, Market>,
 
