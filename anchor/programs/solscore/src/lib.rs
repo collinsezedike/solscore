@@ -28,15 +28,13 @@ pub mod solscore {
         _place_bet(ctx, team_index, amount)
     }
 
-    //Close Market - Niyi/Ebenezer - later on
     pub fn close_market(ctx: Context<CloseMarket>) -> Result<()> {
         _close_market(ctx)
     }
-    //Resolve Market - Niyi/Ebenezer - later on
-    pub fn resolve_market(ctx: Context<ResolveMarket>, winning_team_index:u8) -> Result<()> {
+
+    pub fn resolve_market(ctx: Context<ResolveMarket>, winning_team_index: u8) -> Result<()> {
         _resolve_market(ctx, winning_team_index)
     }
 
-
-    //Claim Payout - collins
+    // Claim Payout - Collins
 }
