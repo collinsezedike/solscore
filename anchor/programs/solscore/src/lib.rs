@@ -1,8 +1,10 @@
+pub mod error;
 pub mod instructions;
 pub mod state;
 
 use anchor_lang::prelude::*;
 
+pub use error::*;
 pub use instructions::*;
 pub use state::*;
 
@@ -22,7 +24,9 @@ pub mod solscore {
         _initialize_market(ctx, league_name, season, teams, odds)
     }
 
-    //Place Bet - victor
+    pub fn place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result<()> {
+        _place_bet(ctx, team_index, amount)
+    }
 
     //Close Market - Niyi/Ebenezer - later on
 
