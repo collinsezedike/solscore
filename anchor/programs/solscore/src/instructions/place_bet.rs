@@ -53,15 +53,15 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
         .ok_or(SolscoreError::MathOverflow)?;
 
     // Initialize bet account with all required data
-    bet.user = user.key();
-    bet.market = market.key();
-    bet.team_index = team_index;
-    bet.amount = amount;
-    bet.claimed = false;
-    bet.payout_amount = Some(payout_amount);
-    bet.timestamp = current_timestamp;
-    bet.claimed_at = None;
-    bet.bump = ctx.bumps.bet;
+    bet.set_inner(Bet {
+        user: user.key(),
+        market: market.key(),
+        team_index: team_index,
+        amount: amount,
+        payout_amount: Some(payout_amount),
+        timestamp: current_timestamp,
+        bump: ctx.bumps.bet,
+    });
 
     // Transfer USDC from user to vault
     let transfer_accounts = Transfer {

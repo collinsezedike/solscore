@@ -15,8 +15,6 @@ pub fn _claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
 
     require!(market.is_resolved, SolscoreError::MarketNotResolved);
-    require!(market.is_closed, SolscoreError::MarketNotClosed);
-    require!(!bet.claimed, SolscoreError::BetClaimed);
 
     let transfer_accounts = Transfer {
         from: vault.to_account_info(),
@@ -39,9 +37,6 @@ pub fn _claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
     );
 
     token::transfer(transfer_ctx, bet.payout_amount.unwrap())?;
-
-    bet.claimed = true;
-    bet.claimed_at = Some(Clock::get()?.unix_timestamp);
 
     Ok(())
 }
