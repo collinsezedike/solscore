@@ -15,16 +15,13 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
     let user_token_account = &ctx.accounts.user_token_account;
     let token_program = &ctx.accounts.token_program;
 
-    // Validation Rule 1: Market must exist and be open
-    require!(!market.is_closed, SolscoreError::MarketClosed);
-
-    // Validation Rule 2: Market must not be resolved
+    // Validation Rule 1: Market must not be resolved
     require!(!market.is_resolved, SolscoreError::MarketResolved);
 
-    // Validation Rule 3: Stake amount > 0
+    // Validation Rule 2: Stake amount > 0
     require!(amount > 0, SolscoreError::InvalidBetAmount);
 
-    // Validation Rule 4: User must have sufficient USDC balance
+    // Validation Rule 3: User must have sufficient USDC balance
     require!(
         user_token_account.amount >= amount,
         SolscoreError::InsufficientBalance
