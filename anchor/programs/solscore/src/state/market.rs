@@ -13,7 +13,6 @@ pub struct Market {
     pub teams: Vec<String>,
     #[max_len(30)]
     pub odds: Vec<u64>,
-    pub is_closed: bool,
     pub is_resolved: bool,
     pub winning_team_index: Option<u8>,
     pub total_pool: u64,
