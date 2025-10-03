@@ -1,8 +1,28 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Market;
+use crate::error::SolscoreError;
 
-pub fn _resolve_market(_ctx: Context<ResolveMarket>) -> Result<()> {
+use crate::state::{Bet, Market};
+
+pub fn _resolve_market(ctx: Context<ResolveMarket>, winning_team_index: u8) -> Result<()> {
+    let market = &mut ctx.accounts.market;
+
+    require!(
+        (winning_team_index as usize) < market.teams.len(),
+        SolscoreError::InvalidTeamIndex
+    );
+    require!(!market.is_resolved, SolscoreError::MarketResolved);
+
+    market.is_resolved = true;
+    market.winning_team_index = Some(winning_team_index);
+    market.resolved_at = Some(Clock::get()?.unix_timestamp);
+
+    msg!(
+        "Market resolved: Team {} wins {}",
+        winning_team_index,
+        market.teams[winning_team_index as usize]
+    );
+
     Ok(())
 }
 
