@@ -15,6 +15,10 @@ pub fn _claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
 
     require!(market.is_resolved, SolscoreError::MarketNotResolved);
+    require!(
+        bet.team_index == market.winning_team_index,
+        SolscoreError::BetNotWon
+    );
 
     let transfer_accounts = Transfer {
         from: vault.to_account_info(),

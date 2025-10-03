@@ -8,6 +8,8 @@ pub enum SolscoreError {
     MarketNotResolved,
     #[msg("Bet amount must be greater than zero")]
     InvalidBetAmount,
+    #[msg("Bet team index does not match market winning team index")]
+    BetNotWon,
     #[msg("Insufficient USDC balance")]
     InsufficientBalance,
     #[msg("Invalid team index")]
