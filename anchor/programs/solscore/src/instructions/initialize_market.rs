@@ -21,7 +21,6 @@ pub fn _initialize_market(
         season: season,
         teams: teams,
         odds: odds,
-        is_closed: false,
         is_resolved: false,
         total_pool: 0,
         winning_team_index: None,

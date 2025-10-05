@@ -36,5 +36,7 @@ pub mod solscore {
         _resolve_market(ctx, winning_team_index)
     }
 
-    // Claim Payout - Collins
+    pub fn claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
+        _claim_payout(ctx)
+    }
 }
