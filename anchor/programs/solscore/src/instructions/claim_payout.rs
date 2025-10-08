@@ -16,7 +16,7 @@ pub fn _claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
 
     require!(market.is_resolved, SolscoreError::MarketNotResolved);
     require!(
-        bet.team_index == market.winning_team_index,
+        bet.team_index == market.winning_team_index.unwrap(),
         SolscoreError::BetNotWon
     );
 
