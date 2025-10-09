@@ -30,6 +30,7 @@ const aliceLeagueName = 'ALICE LEAGUE'
 const aliceSeason = 'ALICE SEASON 1'
 const aliceTeams = ['ALICE TEAM 1', 'ALICE TEAM 2', 'ALICE TEAM 3', 'ALICE TEAM 4']
 const aliceOdds = [BigInt(1), BigInt(2), BigInt(3), BigInt(4)]
+const aliceWinningTeamIndex = 0
 
 const bobLeagueName = 'BOB LEAGUE'
 const bobSeason = 'BOB SEASON 1'
@@ -106,5 +107,71 @@ describe('solscore', () => {
     expect(marketAccount.data.isResolved).to.be.false
     expect(marketAccount.data.resolvedAt.__option).to.be.equal('None')
     expect(marketAccount.data.totalPool == BigInt(0))
+  })
+
+  it('should resolve alice market', async () => {
+    const params: solscoreClient.ResolveMarketInput = {
+      // Args
+      winningTeamIndex: aliceWinningTeamIndex,
+
+      // Accounts
+      admin: alice,
+      market: aliceMarket,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }
+
+    const ix = solscoreClient.getResolveMarketInstruction(params)
+    const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+    const tx = createTransaction({
+      feePayer: alice,
+      version: 'legacy',
+      instructions: [ix],
+      latestBlockhash,
+    })
+
+    const signedTransaction = await signTransactionMessageWithSigners(tx)
+    await sendAndConfirmTransaction(signedTransaction)
+
+    const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarket)
+
+    expect(marketAccount.data.isResolved).to.be.true
+    expect(marketAccount.data.resolvedAt.__option).to.not.equal('None')
+    expect(marketAccount.data.winningTeamIndex).to.deep.equal({ __option: 'Some', value: aliceWinningTeamIndex })
+  })
+
+  it('should close alice market', async () => {
+    let accountFetchFailedFlag = false
+    const params: solscoreClient.CloseMarketInput = {
+      // Args
+
+      // Accounts
+      admin: alice,
+      market: aliceMarket,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }
+
+    const ix = solscoreClient.getCloseMarketInstruction(params)
+    const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+    const tx = createTransaction({
+      feePayer: alice,
+      version: 'legacy',
+      instructions: [ix],
+      latestBlockhash,
+    })
+
+    const signedTransaction = await signTransactionMessageWithSigners(tx)
+    await sendAndConfirmTransaction(signedTransaction)
+
+    try {
+      const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarket)
+      console.log(marketAccount)
+    } catch (error: any) {
+      accountFetchFailedFlag = true
+      expect(error.message).to.contain('Account not found')
+    } finally {
+      expect(accountFetchFailedFlag).to.be.true
+    }
   })
 })
