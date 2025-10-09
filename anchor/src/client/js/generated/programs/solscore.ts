@@ -13,13 +13,59 @@ import {
   type Address,
   type ReadonlyUint8Array,
 } from 'gill';
-import { type ParsedGreetInstruction } from '../instructions';
+import {
+  type ParsedClaimPayoutInstruction,
+  type ParsedCloseMarketInstruction,
+  type ParsedInitializeMarketInstruction,
+  type ParsedPlaceBetInstruction,
+  type ParsedResolveMarketInstruction,
+} from '../instructions';
 
 export const SOLSCORE_PROGRAM_ADDRESS =
   'JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H' as Address<'JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H'>;
 
+export enum SolscoreAccount {
+  Bet,
+  Market,
+}
+
+export function identifySolscoreAccount(
+  account: { data: ReadonlyUint8Array } | ReadonlyUint8Array
+): SolscoreAccount {
+  const data = 'data' in account ? account.data : account;
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([147, 23, 35, 59, 15, 75, 155, 32])
+      ),
+      0
+    )
+  ) {
+    return SolscoreAccount.Bet;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([219, 190, 213, 55, 0, 227, 198, 154])
+      ),
+      0
+    )
+  ) {
+    return SolscoreAccount.Market;
+  }
+  throw new Error(
+    'The provided account could not be identified as a solscore account.'
+  );
+}
+
 export enum SolscoreInstruction {
-  Greet,
+  ClaimPayout,
+  CloseMarket,
+  InitializeMarket,
+  PlaceBet,
+  ResolveMarket,
 }
 
 export function identifySolscoreInstruction(
@@ -30,12 +76,56 @@ export function identifySolscoreInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([203, 194, 3, 150, 228, 58, 181, 62])
+        new Uint8Array([127, 240, 132, 62, 227, 198, 146, 133])
       ),
       0
     )
   ) {
-    return SolscoreInstruction.Greet;
+    return SolscoreInstruction.ClaimPayout;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([88, 154, 248, 186, 48, 14, 123, 244])
+      ),
+      0
+    )
+  ) {
+    return SolscoreInstruction.CloseMarket;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([35, 35, 189, 193, 155, 48, 170, 203])
+      ),
+      0
+    )
+  ) {
+    return SolscoreInstruction.InitializeMarket;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([222, 62, 67, 220, 63, 166, 126, 33])
+      ),
+      0
+    )
+  ) {
+    return SolscoreInstruction.PlaceBet;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([155, 23, 80, 173, 46, 74, 23, 239])
+      ),
+      0
+    )
+  ) {
+    return SolscoreInstruction.ResolveMarket;
   }
   throw new Error(
     'The provided instruction could not be identified as a solscore instruction.'
@@ -44,6 +134,19 @@ export function identifySolscoreInstruction(
 
 export type ParsedSolscoreInstruction<
   TProgram extends string = 'JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H',
-> = {
-  instructionType: SolscoreInstruction.Greet;
-} & ParsedGreetInstruction<TProgram>;
+> =
+  | ({
+      instructionType: SolscoreInstruction.ClaimPayout;
+    } & ParsedClaimPayoutInstruction<TProgram>)
+  | ({
+      instructionType: SolscoreInstruction.CloseMarket;
+    } & ParsedCloseMarketInstruction<TProgram>)
+  | ({
+      instructionType: SolscoreInstruction.InitializeMarket;
+    } & ParsedInitializeMarketInstruction<TProgram>)
+  | ({
+      instructionType: SolscoreInstruction.PlaceBet;
+    } & ParsedPlaceBetInstruction<TProgram>)
+  | ({
+      instructionType: SolscoreInstruction.ResolveMarket;
+    } & ParsedResolveMarketInstruction<TProgram>);
