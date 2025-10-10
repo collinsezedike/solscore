@@ -10,21 +10,17 @@ import {
 } from 'gill/programs'
 
 import * as solscoreClient from '../src/client/js/generated'
-import { createAndAidropSigner, createAndMintToken, getMarketPDA } from './helpers'
+import { createAndAidropSigner, createAndMintToken, getBetPDA, getMarketPDA } from './helpers'
 
 let mint: Address
 
 let alice: KeyPairSigner
-let bob: KeyPairSigner
-let john: KeyPairSigner
-
-let aliceMarket: Address
-let bobMarket: Address
-let johnMarket: Address
-
+let aliceMarketAccount: Address
 let aliceMarketVault: Address
-let bobMarketVault: Address
-let johnMarketVault: Address
+
+let bob: KeyPairSigner
+let bobTokenAccount: Address
+let bobBetAccount: Address
 
 const aliceLeagueName = 'ALICE LEAGUE'
 const aliceSeason = 'ALICE SEASON 1'
@@ -32,15 +28,8 @@ const aliceTeams = ['ALICE TEAM 1', 'ALICE TEAM 2', 'ALICE TEAM 3', 'ALICE TEAM 
 const aliceOdds = [BigInt(1), BigInt(2), BigInt(3), BigInt(4)]
 const aliceWinningTeamIndex = 0
 
-const bobLeagueName = 'BOB LEAGUE'
-const bobSeason = 'BOB SEASON 1'
-const bobTeams = ['BOB TEAM 1', 'BOB TEAM 2', 'BOB TEAM 3', 'BOB TEAM 4']
-const bobOdds = [BigInt(2), BigInt(1), BigInt(3), BigInt(4)]
-
-const johnLeagueName = 'JOHN LEAGUE'
-const johnSeason = 'JOHN SEASON 1'
-const johnTeams = ['JOHN TEAM 1', 'JOHN TEAM 2', 'JOHN TEAM 3', 'JOHN TEAM 4']
-const johnOdds = [BigInt(3), BigInt(2), BigInt(1), BigInt(4)]
+const bobBetTeamIndex = 0
+const bobBetAmount = BigInt(100)
 
 const { rpc, sendAndConfirmTransaction } = createSolanaClient({
   urlOrMoniker: 'localnet',
@@ -50,17 +39,14 @@ describe('solscore', () => {
   before(async () => {
     alice = await createAndAidropSigner()
     bob = await createAndAidropSigner()
-    john = await createAndAidropSigner()
 
-    mint = await createAndMintToken([alice.address, bob.address, john.address])
+    mint = await createAndMintToken([bob.address])
 
-    aliceMarket = await getMarketPDA(aliceLeagueName, aliceSeason)
-    bobMarket = await getMarketPDA(bobLeagueName, bobSeason)
-    johnMarket = await getMarketPDA(johnLeagueName, johnSeason)
+    aliceMarketAccount = await getMarketPDA(aliceLeagueName, aliceSeason)
+    aliceMarketVault = await getAssociatedTokenAccountAddress(mint, aliceMarketAccount)
 
-    aliceMarketVault = await getAssociatedTokenAccountAddress(mint, aliceMarket)
-    bobMarketVault = await getAssociatedTokenAccountAddress(mint, bobMarket)
-    johnMarketVault = await getAssociatedTokenAccountAddress(mint, johnMarket)
+    bobTokenAccount = await getAssociatedTokenAccountAddress(mint, bob)
+    bobBetAccount = await getBetPDA(bob.address, aliceMarketAccount)
   })
 
   it('should initialize alice market', async () => {
@@ -73,7 +59,7 @@ describe('solscore', () => {
 
       // Accounts
       admin: alice,
-      market: aliceMarket,
+      market: aliceMarketAccount,
       mint: mint,
       vault: aliceMarketVault,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
@@ -94,7 +80,7 @@ describe('solscore', () => {
     const signedTransaction = await signTransactionMessageWithSigners(tx)
     await sendAndConfirmTransaction(signedTransaction)
 
-    const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarket)
+    const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
 
     expect(marketAccount.data.admin.toString() == alice.address.toString())
     expect(marketAccount.data.leagueName == aliceLeagueName)
@@ -109,6 +95,57 @@ describe('solscore', () => {
     expect(marketAccount.data.totalPool == BigInt(0))
   })
 
+  it("should place bob's bet in alice market", async () => {
+    const marketAccountBefore = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
+    const marketPoolBefore = marketAccountBefore.data.totalPool
+
+    const params: solscoreClient.PlaceBetInput = {
+      // Args
+      teamIndex: bobBetTeamIndex,
+      amount: bobBetAmount,
+
+      // Accounts
+      bet: bobBetAccount,
+      user: bob,
+      userTokenAccount: bobTokenAccount,
+      market: aliceMarketAccount,
+      mint: mint,
+      vault: aliceMarketVault,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      tokenProgram: TOKEN_PROGRAM_ADDRESS,
+    }
+
+    const ix = solscoreClient.getPlaceBetInstruction(params)
+    const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+    const tx = createTransaction({
+      feePayer: bob,
+      version: 'legacy',
+      instructions: [ix],
+      latestBlockhash,
+    })
+
+    const signedTransaction = await signTransactionMessageWithSigners(tx)
+    await sendAndConfirmTransaction(signedTransaction)
+
+    const betAccount = await solscoreClient.fetchBet(rpc, bobBetAccount)
+
+    expect(betAccount.data.user.toString() == bob.address.toString())
+    expect(betAccount.data.market.toString() == aliceMarketAccount.toString())
+    expect(betAccount.data.teamIndex == bobBetTeamIndex)
+    expect(betAccount.data.amount == bobBetAmount)
+    expect(betAccount.data.payoutAmount).to.deep.equal({
+      __option: 'Some',
+      value: bobBetAmount * aliceOdds[bobBetTeamIndex],
+    })
+
+    const marketAccountAfter = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
+    const marketPoolAfter = marketAccountAfter.data.totalPool
+
+    expect(marketPoolAfter).to.be.equal(marketPoolBefore + bobBetAmount)
+  })
+
   it('should resolve alice market', async () => {
     const params: solscoreClient.ResolveMarketInput = {
       // Args
@@ -116,7 +153,7 @@ describe('solscore', () => {
 
       // Accounts
       admin: alice,
-      market: aliceMarket,
+      market: aliceMarketAccount,
       systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }
 
@@ -133,11 +170,51 @@ describe('solscore', () => {
     const signedTransaction = await signTransactionMessageWithSigners(tx)
     await sendAndConfirmTransaction(signedTransaction)
 
-    const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarket)
+    const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
 
     expect(marketAccount.data.isResolved).to.be.true
     expect(marketAccount.data.resolvedAt.__option).to.not.equal('None')
     expect(marketAccount.data.winningTeamIndex).to.deep.equal({ __option: 'Some', value: aliceWinningTeamIndex })
+  })
+
+  it("should claim payout from bob's bet in alice market", async () => {
+    let accountFetchFailedFlag = false
+    const params: solscoreClient.ClaimPayoutInput = {
+      // Args
+
+      // Accounts
+      bet: bobBetAccount,
+      user: bob,
+      userTokenAccount: bobTokenAccount,
+      market: aliceMarketAccount,
+      mint: mint,
+      vault: aliceMarketVault,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      tokenProgram: TOKEN_PROGRAM_ADDRESS,
+    }
+
+    const ix = solscoreClient.getClaimPayoutInstruction(params)
+    const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+    const tx = createTransaction({
+      feePayer: bob,
+      version: 'legacy',
+      instructions: [ix],
+      latestBlockhash,
+    })
+
+    const signedTransaction = await signTransactionMessageWithSigners(tx)
+    await sendAndConfirmTransaction(signedTransaction)
+
+    try {
+      await solscoreClient.fetchBet(rpc, bobBetAccount)
+    } catch (error: any) {
+      accountFetchFailedFlag = true
+      expect(error.message).to.contain('Account not found')
+    } finally {
+      expect(accountFetchFailedFlag).to.be.true
+    }
   })
 
   it('should close alice market', async () => {
@@ -147,7 +224,7 @@ describe('solscore', () => {
 
       // Accounts
       admin: alice,
-      market: aliceMarket,
+      market: aliceMarketAccount,
       systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }
 
@@ -165,8 +242,7 @@ describe('solscore', () => {
     await sendAndConfirmTransaction(signedTransaction)
 
     try {
-      const marketAccount = await solscoreClient.fetchMarket(rpc, aliceMarket)
-      console.log(marketAccount)
+      await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
     } catch (error: any) {
       accountFetchFailedFlag = true
       expect(error.message).to.contain('Account not found')

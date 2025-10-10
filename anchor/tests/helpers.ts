@@ -1,5 +1,12 @@
 import { SOLSCORE_PROGRAM_ADDRESS } from '../src/client/js/generated/programs'
-import { address, Address, createSolanaClient, generateKeyPairSigner, getProgramDerivedAddress } from 'gill'
+import {
+  address,
+  Address,
+  createSolanaClient,
+  generateKeyPairSigner,
+  getAddressEncoder,
+  getProgramDerivedAddress,
+} from 'gill'
 
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo } from '@solana/spl-token'
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
@@ -40,4 +47,13 @@ export const getMarketPDA = async (leagueName: string, season: string): Promise<
     seeds: [Buffer.from('market'), leagueName, season],
   })
   return marketPDA
+}
+
+export const getBetPDA = async (user: Address, market: Address): Promise<Address> => {
+  const addressEncoder = getAddressEncoder()
+  const [betPDA, _bump] = await getProgramDerivedAddress({
+    programAddress: SOLSCORE_PROGRAM_ADDRESS,
+    seeds: [Buffer.from('bet'), addressEncoder.encode(user), addressEncoder.encode(market)],
+  })
+  return betPDA
 }
