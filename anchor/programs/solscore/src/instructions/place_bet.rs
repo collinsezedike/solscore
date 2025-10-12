@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{self, Mint, Token, TokenAccount, Transfer},
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
 use crate::error::SolscoreError;
@@ -15,25 +15,30 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
     let user_token_account = &ctx.accounts.user_token_account;
     let token_program = &ctx.accounts.token_program;
 
-    // Validation Rule 1: Market must not be resolved
     require!(!market.is_resolved, SolscoreError::MarketResolved);
 
-    // Validation Rule 2: Stake amount > 0
     require!(amount > 0, SolscoreError::InvalidBetAmount);
 
-    // Validation Rule 3: User must have sufficient USDC balance
+    require!(
+        market.allowed_bettors > 0,
+        SolscoreError::MarketAllowedBettorsLimitExceeded
+    );
+
+    require!(
+        amount <= market.max_stake_amount,
+        SolscoreError::InvalidBetAmount
+    );
+
     require!(
         user_token_account.amount >= amount,
         SolscoreError::InsufficientBalance
     );
 
-    // Validate team_index is within bounds
     require!(
         (team_index as usize) < market.teams.len(),
         SolscoreError::InvalidTeamIndex
     );
 
-    // Validate team_index is within odds bounds
     require!(
         (team_index as usize) < market.odds.len(),
         SolscoreError::InvalidTeamIndex
@@ -67,13 +72,13 @@ pub fn _place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result
         authority: user.to_account_info(),
     };
     let transfer_ctx = CpiContext::new(token_program.to_account_info(), transfer_accounts);
-    token::transfer(transfer_ctx, amount)?;
+    transfer(transfer_ctx, amount)?;
 
-    // Update market's total pool
-    market.total_pool = market
-        .total_pool
-        .checked_add(amount)
-        .ok_or(SolscoreError::MathOverflow)?;
+    // Update the amount of allowed bettors
+    market.allowed_bettors = market
+        .allowed_bettors
+        .checked_sub(1)
+        .ok_or(SolscoreError::MathUnderflow)?;
 
     msg!(
         "Bet placed: User {}, Market {}, Team Index {}, Amount {}, Payout Amount {}",

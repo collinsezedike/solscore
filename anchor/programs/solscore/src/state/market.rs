@@ -15,8 +15,8 @@ pub struct Market {
     pub odds: Vec<u64>,
     pub is_resolved: bool,
     pub winning_team_index: Option<u8>,
-    pub total_pool: u64,
-    pub created_at: i64,
+    pub max_stake_amount: u64,
+    pub allowed_bettors: u64,
     pub resolved_at: Option<i64>,
     pub bump: u8,
 }
