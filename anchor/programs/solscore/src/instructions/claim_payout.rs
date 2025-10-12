@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{self, Mint, Token, TokenAccount, Transfer},
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
 
 use crate::error::SolscoreError;
@@ -40,7 +40,7 @@ pub fn _claim_payout(ctx: Context<ClaimPayout>) -> Result<()> {
         signer_seeds,
     );
 
-    token::transfer(transfer_ctx, bet.payout_amount.unwrap())?;
+    transfer(transfer_ctx, bet.payout_amount.unwrap())?;
 
     Ok(())
 }
