@@ -20,7 +20,7 @@ export const createAndAidropSigner = async () => {
   return keyPair
 }
 
-export const createAndMintToken = async (testAddresses: Address[]): Promise<Address> => {
+export const createAndMintToken = async (testAddresses: Address[], amount: number): Promise<Address> => {
   const feePayer = Keypair.generate()
   const connection = new Connection('http://localhost:8899', 'confirmed')
   const airdropSignature = await connection.requestAirdrop(feePayer.publicKey, 2 * LAMPORTS_PER_SOL)
@@ -35,7 +35,7 @@ export const createAndMintToken = async (testAddresses: Address[]): Promise<Addr
 
   for (let testAddress of testAddresses) {
     const tokenAccount = await getOrCreateAssociatedTokenAccount(connection, feePayer, mint, new PublicKey(testAddress))
-    await mintTo(connection, feePayer, mint, tokenAccount.address, feePayer, 10000 * 10 ** 6)
+    await mintTo(connection, feePayer, mint, tokenAccount.address, feePayer, amount * 10 ** 6)
   }
 
   return address(mint.toBase58())

@@ -66,6 +66,7 @@ export type InitializeMarketInstruction<
   TAccountVault extends string | AccountMeta<string> = string,
   TAccountMint extends string | AccountMeta<string> = string,
   TAccountAdmin extends string | AccountMeta<string> = string,
+  TAccountAdminTokenAccount extends string | AccountMeta<string> = string,
   TAccountTokenProgram extends
     | string
     | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -93,6 +94,9 @@ export type InitializeMarketInstruction<
         ? WritableSignerAccount<TAccountAdmin> &
             AccountSignerMeta<TAccountAdmin>
         : TAccountAdmin,
+      TAccountAdminTokenAccount extends string
+        ? WritableAccount<TAccountAdminTokenAccount>
+        : TAccountAdminTokenAccount,
       TAccountTokenProgram extends string
         ? ReadonlyAccount<TAccountTokenProgram>
         : TAccountTokenProgram,
@@ -112,6 +116,8 @@ export type InitializeMarketInstructionData = {
   season: string;
   teams: Array<string>;
   odds: Array<bigint>;
+  maxStakeAmount: bigint;
+  allowedBettors: bigint;
 };
 
 export type InitializeMarketInstructionDataArgs = {
@@ -119,6 +125,8 @@ export type InitializeMarketInstructionDataArgs = {
   season: string;
   teams: Array<string>;
   odds: Array<number | bigint>;
+  maxStakeAmount: number | bigint;
+  allowedBettors: number | bigint;
 };
 
 export function getInitializeMarketInstructionDataEncoder(): Encoder<InitializeMarketInstructionDataArgs> {
@@ -134,6 +142,8 @@ export function getInitializeMarketInstructionDataEncoder(): Encoder<InitializeM
         ),
       ],
       ['odds', getArrayEncoder(getU64Encoder())],
+      ['maxStakeAmount', getU64Encoder()],
+      ['allowedBettors', getU64Encoder()],
     ]),
     (value) => ({ ...value, discriminator: INITIALIZE_MARKET_DISCRIMINATOR })
   );
@@ -149,6 +159,8 @@ export function getInitializeMarketInstructionDataDecoder(): Decoder<InitializeM
       getArrayDecoder(addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())),
     ],
     ['odds', getArrayDecoder(getU64Decoder())],
+    ['maxStakeAmount', getU64Decoder()],
+    ['allowedBettors', getU64Decoder()],
   ]);
 }
 
@@ -167,6 +179,7 @@ export type InitializeMarketAsyncInput<
   TAccountVault extends string = string,
   TAccountMint extends string = string,
   TAccountAdmin extends string = string,
+  TAccountAdminTokenAccount extends string = string,
   TAccountTokenProgram extends string = string,
   TAccountAssociatedTokenProgram extends string = string,
   TAccountSystemProgram extends string = string,
@@ -175,6 +188,7 @@ export type InitializeMarketAsyncInput<
   vault?: Address<TAccountVault>;
   mint: Address<TAccountMint>;
   admin: TransactionSigner<TAccountAdmin>;
+  adminTokenAccount?: Address<TAccountAdminTokenAccount>;
   tokenProgram?: Address<TAccountTokenProgram>;
   associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
   systemProgram?: Address<TAccountSystemProgram>;
@@ -182,6 +196,8 @@ export type InitializeMarketAsyncInput<
   season: InitializeMarketInstructionDataArgs['season'];
   teams: InitializeMarketInstructionDataArgs['teams'];
   odds: InitializeMarketInstructionDataArgs['odds'];
+  maxStakeAmount: InitializeMarketInstructionDataArgs['maxStakeAmount'];
+  allowedBettors: InitializeMarketInstructionDataArgs['allowedBettors'];
 };
 
 export async function getInitializeMarketInstructionAsync<
@@ -189,6 +205,7 @@ export async function getInitializeMarketInstructionAsync<
   TAccountVault extends string,
   TAccountMint extends string,
   TAccountAdmin extends string,
+  TAccountAdminTokenAccount extends string,
   TAccountTokenProgram extends string,
   TAccountAssociatedTokenProgram extends string,
   TAccountSystemProgram extends string,
@@ -199,6 +216,7 @@ export async function getInitializeMarketInstructionAsync<
     TAccountVault,
     TAccountMint,
     TAccountAdmin,
+    TAccountAdminTokenAccount,
     TAccountTokenProgram,
     TAccountAssociatedTokenProgram,
     TAccountSystemProgram
@@ -211,6 +229,7 @@ export async function getInitializeMarketInstructionAsync<
     TAccountVault,
     TAccountMint,
     TAccountAdmin,
+    TAccountAdminTokenAccount,
     TAccountTokenProgram,
     TAccountAssociatedTokenProgram,
     TAccountSystemProgram
@@ -225,6 +244,10 @@ export async function getInitializeMarketInstructionAsync<
     vault: { value: input.vault ?? null, isWritable: true },
     mint: { value: input.mint ?? null, isWritable: false },
     admin: { value: input.admin ?? null, isWritable: true },
+    adminTokenAccount: {
+      value: input.adminTokenAccount ?? null,
+      isWritable: true,
+    },
     tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
     associatedTokenProgram: {
       value: input.associatedTokenProgram ?? null,
@@ -270,6 +293,17 @@ export async function getInitializeMarketInstructionAsync<
       ],
     });
   }
+  if (!accounts.adminTokenAccount.value) {
+    accounts.adminTokenAccount.value = await getProgramDerivedAddress({
+      programAddress:
+        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>,
+      seeds: [
+        getAddressEncoder().encode(expectAddress(accounts.admin.value)),
+        getAddressEncoder().encode(expectAddress(accounts.tokenProgram.value)),
+        getAddressEncoder().encode(expectAddress(accounts.mint.value)),
+      ],
+    });
+  }
   if (!accounts.associatedTokenProgram.value) {
     accounts.associatedTokenProgram.value =
       'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
@@ -286,6 +320,7 @@ export async function getInitializeMarketInstructionAsync<
       getAccountMeta(accounts.vault),
       getAccountMeta(accounts.mint),
       getAccountMeta(accounts.admin),
+      getAccountMeta(accounts.adminTokenAccount),
       getAccountMeta(accounts.tokenProgram),
       getAccountMeta(accounts.associatedTokenProgram),
       getAccountMeta(accounts.systemProgram),
@@ -300,6 +335,7 @@ export async function getInitializeMarketInstructionAsync<
     TAccountVault,
     TAccountMint,
     TAccountAdmin,
+    TAccountAdminTokenAccount,
     TAccountTokenProgram,
     TAccountAssociatedTokenProgram,
     TAccountSystemProgram
@@ -313,6 +349,7 @@ export type InitializeMarketInput<
   TAccountVault extends string = string,
   TAccountMint extends string = string,
   TAccountAdmin extends string = string,
+  TAccountAdminTokenAccount extends string = string,
   TAccountTokenProgram extends string = string,
   TAccountAssociatedTokenProgram extends string = string,
   TAccountSystemProgram extends string = string,
@@ -321,6 +358,7 @@ export type InitializeMarketInput<
   vault: Address<TAccountVault>;
   mint: Address<TAccountMint>;
   admin: TransactionSigner<TAccountAdmin>;
+  adminTokenAccount: Address<TAccountAdminTokenAccount>;
   tokenProgram?: Address<TAccountTokenProgram>;
   associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
   systemProgram?: Address<TAccountSystemProgram>;
@@ -328,6 +366,8 @@ export type InitializeMarketInput<
   season: InitializeMarketInstructionDataArgs['season'];
   teams: InitializeMarketInstructionDataArgs['teams'];
   odds: InitializeMarketInstructionDataArgs['odds'];
+  maxStakeAmount: InitializeMarketInstructionDataArgs['maxStakeAmount'];
+  allowedBettors: InitializeMarketInstructionDataArgs['allowedBettors'];
 };
 
 export function getInitializeMarketInstruction<
@@ -335,6 +375,7 @@ export function getInitializeMarketInstruction<
   TAccountVault extends string,
   TAccountMint extends string,
   TAccountAdmin extends string,
+  TAccountAdminTokenAccount extends string,
   TAccountTokenProgram extends string,
   TAccountAssociatedTokenProgram extends string,
   TAccountSystemProgram extends string,
@@ -345,6 +386,7 @@ export function getInitializeMarketInstruction<
     TAccountVault,
     TAccountMint,
     TAccountAdmin,
+    TAccountAdminTokenAccount,
     TAccountTokenProgram,
     TAccountAssociatedTokenProgram,
     TAccountSystemProgram
@@ -356,6 +398,7 @@ export function getInitializeMarketInstruction<
   TAccountVault,
   TAccountMint,
   TAccountAdmin,
+  TAccountAdminTokenAccount,
   TAccountTokenProgram,
   TAccountAssociatedTokenProgram,
   TAccountSystemProgram
@@ -369,6 +412,10 @@ export function getInitializeMarketInstruction<
     vault: { value: input.vault ?? null, isWritable: true },
     mint: { value: input.mint ?? null, isWritable: false },
     admin: { value: input.admin ?? null, isWritable: true },
+    adminTokenAccount: {
+      value: input.adminTokenAccount ?? null,
+      isWritable: true,
+    },
     tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
     associatedTokenProgram: {
       value: input.associatedTokenProgram ?? null,
@@ -405,6 +452,7 @@ export function getInitializeMarketInstruction<
       getAccountMeta(accounts.vault),
       getAccountMeta(accounts.mint),
       getAccountMeta(accounts.admin),
+      getAccountMeta(accounts.adminTokenAccount),
       getAccountMeta(accounts.tokenProgram),
       getAccountMeta(accounts.associatedTokenProgram),
       getAccountMeta(accounts.systemProgram),
@@ -419,6 +467,7 @@ export function getInitializeMarketInstruction<
     TAccountVault,
     TAccountMint,
     TAccountAdmin,
+    TAccountAdminTokenAccount,
     TAccountTokenProgram,
     TAccountAssociatedTokenProgram,
     TAccountSystemProgram
@@ -437,9 +486,10 @@ export type ParsedInitializeMarketInstruction<
     vault: TAccountMetas[1];
     mint: TAccountMetas[2];
     admin: TAccountMetas[3];
-    tokenProgram: TAccountMetas[4];
-    associatedTokenProgram: TAccountMetas[5];
-    systemProgram: TAccountMetas[6];
+    adminTokenAccount: TAccountMetas[4];
+    tokenProgram: TAccountMetas[5];
+    associatedTokenProgram: TAccountMetas[6];
+    systemProgram: TAccountMetas[7];
   };
   data: InitializeMarketInstructionData;
 };
@@ -452,7 +502,7 @@ export function parseInitializeMarketInstruction<
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>
 ): ParsedInitializeMarketInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 7) {
+  if (instruction.accounts.length < 8) {
     // TODO: Coded error.
     throw new Error('Not enough accounts');
   }
@@ -469,6 +519,7 @@ export function parseInitializeMarketInstruction<
       vault: getNextAccount(),
       mint: getNextAccount(),
       admin: getNextAccount(),
+      adminTokenAccount: getNextAccount(),
       tokenProgram: getNextAccount(),
       associatedTokenProgram: getNextAccount(),
       systemProgram: getNextAccount(),

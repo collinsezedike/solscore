@@ -15,6 +15,7 @@ import { createAndAidropSigner, createAndMintToken, getBetPDA, getMarketPDA } fr
 let mint: Address
 
 let alice: KeyPairSigner
+let aliceTokenAccount: Address
 let aliceMarketAccount: Address
 let aliceMarketVault: Address
 
@@ -27,6 +28,8 @@ const aliceSeason = 'ALICE SEASON 1'
 const aliceTeams = ['ALICE TEAM 1', 'ALICE TEAM 2', 'ALICE TEAM 3', 'ALICE TEAM 4']
 const aliceOdds = [BigInt(1), BigInt(2), BigInt(3), BigInt(4)]
 const aliceWinningTeamIndex = 0
+const aliceAllowedBettors = BigInt(10)
+const aliceMaxStakeAmount = BigInt(100)
 
 const bobBetTeamIndex = 0
 const bobBetAmount = BigInt(100)
@@ -40,8 +43,11 @@ describe('solscore', () => {
     alice = await createAndAidropSigner()
     bob = await createAndAidropSigner()
 
-    mint = await createAndMintToken([bob.address])
+    const highestOdd = aliceOdds.reduce((max, current) => (current > max ? current : max))
+    const amount = highestOdd * aliceMaxStakeAmount * aliceAllowedBettors
+    mint = await createAndMintToken([alice.address, bob.address], Number(amount))
 
+    aliceTokenAccount = await getAssociatedTokenAccountAddress(mint, alice)
     aliceMarketAccount = await getMarketPDA(aliceLeagueName, aliceSeason)
     aliceMarketVault = await getAssociatedTokenAccountAddress(mint, aliceMarketAccount)
 
@@ -56,9 +62,12 @@ describe('solscore', () => {
       season: aliceSeason,
       odds: aliceOdds,
       teams: aliceTeams,
+      allowedBettors: aliceAllowedBettors,
+      maxStakeAmount: aliceMaxStakeAmount,
 
       // Accounts
       admin: alice,
+      adminTokenAccount: aliceTokenAccount,
       market: aliceMarketAccount,
       mint: mint,
       vault: aliceMarketVault,
@@ -85,6 +94,8 @@ describe('solscore', () => {
     expect(marketAccount.data.admin.toString() == alice.address.toString())
     expect(marketAccount.data.leagueName == aliceLeagueName)
     expect(marketAccount.data.season == aliceSeason)
+    expect(marketAccount.data.maxStakeAmount == aliceMaxStakeAmount)
+    expect(marketAccount.data.allowedBettors == aliceAllowedBettors)
     expect(marketAccount.data.teams).lengthOf(aliceTeams.length)
     expect(marketAccount.data.teams).to.include.all.members(aliceTeams)
     expect(marketAccount.data.odds).lengthOf(aliceOdds.length)
@@ -92,12 +103,11 @@ describe('solscore', () => {
     expect(marketAccount.data.winningTeamIndex.__option).to.equal('None')
     expect(marketAccount.data.isResolved).to.be.false
     expect(marketAccount.data.resolvedAt.__option).to.be.equal('None')
-    expect(marketAccount.data.totalPool == BigInt(0))
   })
 
   it("should place bob's bet in alice market", async () => {
     const marketAccountBefore = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
-    const marketPoolBefore = marketAccountBefore.data.totalPool
+    const marketAllowedBettorsBefore = marketAccountBefore.data.allowedBettors
 
     const params: solscoreClient.PlaceBetInput = {
       // Args
@@ -141,9 +151,9 @@ describe('solscore', () => {
     })
 
     const marketAccountAfter = await solscoreClient.fetchMarket(rpc, aliceMarketAccount)
-    const marketPoolAfter = marketAccountAfter.data.totalPool
+    const marketAllowedBettorsAfter = marketAccountAfter.data.allowedBettors
 
-    expect(marketPoolAfter).to.be.equal(marketPoolBefore + bobBetAmount)
+    expect(marketAllowedBettorsAfter).to.be.equal(marketAllowedBettorsBefore - BigInt(1))
   })
 
   it('should resolve alice market', async () => {
@@ -224,7 +234,12 @@ describe('solscore', () => {
 
       // Accounts
       admin: alice,
+      mint: mint,
+      adminTokenAccount: aliceTokenAccount,
       market: aliceMarketAccount,
+      vault: aliceMarketVault,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+      tokenProgram: TOKEN_PROGRAM_ADDRESS,
       systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }
 

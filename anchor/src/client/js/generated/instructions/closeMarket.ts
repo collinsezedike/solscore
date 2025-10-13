@@ -10,8 +10,10 @@ import {
   combineCodec,
   fixDecoderSize,
   fixEncoderSize,
+  getAddressEncoder,
   getBytesDecoder,
   getBytesEncoder,
+  getProgramDerivedAddress,
   getStructDecoder,
   getStructEncoder,
   transformEncoder,
@@ -31,7 +33,11 @@ import {
   type WritableSignerAccount,
 } from 'gill';
 import { SOLSCORE_PROGRAM_ADDRESS } from '../programs';
-import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
+import {
+  expectAddress,
+  getAccountMetaFactory,
+  type ResolvedAccount,
+} from '../shared';
 
 export const CLOSE_MARKET_DISCRIMINATOR = new Uint8Array([
   88, 154, 248, 186, 48, 14, 123, 244,
@@ -46,7 +52,16 @@ export function getCloseMarketDiscriminatorBytes() {
 export type CloseMarketInstruction<
   TProgram extends string = typeof SOLSCORE_PROGRAM_ADDRESS,
   TAccountMarket extends string | AccountMeta<string> = string,
+  TAccountMint extends string | AccountMeta<string> = string,
+  TAccountVault extends string | AccountMeta<string> = string,
+  TAccountAdminTokenAccount extends string | AccountMeta<string> = string,
   TAccountAdmin extends string | AccountMeta<string> = string,
+  TAccountTokenProgram extends
+    | string
+    | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+  TAccountAssociatedTokenProgram extends
+    | string
+    | AccountMeta<string> = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
   TAccountSystemProgram extends
     | string
     | AccountMeta<string> = '11111111111111111111111111111111',
@@ -58,10 +73,25 @@ export type CloseMarketInstruction<
       TAccountMarket extends string
         ? WritableAccount<TAccountMarket>
         : TAccountMarket,
+      TAccountMint extends string
+        ? ReadonlyAccount<TAccountMint>
+        : TAccountMint,
+      TAccountVault extends string
+        ? WritableAccount<TAccountVault>
+        : TAccountVault,
+      TAccountAdminTokenAccount extends string
+        ? WritableAccount<TAccountAdminTokenAccount>
+        : TAccountAdminTokenAccount,
       TAccountAdmin extends string
         ? WritableSignerAccount<TAccountAdmin> &
             AccountSignerMeta<TAccountAdmin>
         : TAccountAdmin,
+      TAccountTokenProgram extends string
+        ? ReadonlyAccount<TAccountTokenProgram>
+        : TAccountTokenProgram,
+      TAccountAssociatedTokenProgram extends string
+        ? ReadonlyAccount<TAccountAssociatedTokenProgram>
+        : TAccountAssociatedTokenProgram,
       TAccountSystemProgram extends string
         ? ReadonlyAccount<TAccountSystemProgram>
         : TAccountSystemProgram,
@@ -96,29 +126,60 @@ export function getCloseMarketInstructionDataCodec(): FixedSizeCodec<
   );
 }
 
-export type CloseMarketInput<
+export type CloseMarketAsyncInput<
   TAccountMarket extends string = string,
+  TAccountMint extends string = string,
+  TAccountVault extends string = string,
+  TAccountAdminTokenAccount extends string = string,
   TAccountAdmin extends string = string,
+  TAccountTokenProgram extends string = string,
+  TAccountAssociatedTokenProgram extends string = string,
   TAccountSystemProgram extends string = string,
 > = {
   market: Address<TAccountMarket>;
+  mint: Address<TAccountMint>;
+  vault?: Address<TAccountVault>;
+  adminTokenAccount?: Address<TAccountAdminTokenAccount>;
   admin: TransactionSigner<TAccountAdmin>;
+  tokenProgram?: Address<TAccountTokenProgram>;
+  associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
   systemProgram?: Address<TAccountSystemProgram>;
 };
 
-export function getCloseMarketInstruction<
+export async function getCloseMarketInstructionAsync<
   TAccountMarket extends string,
+  TAccountMint extends string,
+  TAccountVault extends string,
+  TAccountAdminTokenAccount extends string,
   TAccountAdmin extends string,
+  TAccountTokenProgram extends string,
+  TAccountAssociatedTokenProgram extends string,
   TAccountSystemProgram extends string,
   TProgramAddress extends Address = typeof SOLSCORE_PROGRAM_ADDRESS,
 >(
-  input: CloseMarketInput<TAccountMarket, TAccountAdmin, TAccountSystemProgram>,
+  input: CloseMarketAsyncInput<
+    TAccountMarket,
+    TAccountMint,
+    TAccountVault,
+    TAccountAdminTokenAccount,
+    TAccountAdmin,
+    TAccountTokenProgram,
+    TAccountAssociatedTokenProgram,
+    TAccountSystemProgram
+  >,
   config?: { programAddress?: TProgramAddress }
-): CloseMarketInstruction<
-  TProgramAddress,
-  TAccountMarket,
-  TAccountAdmin,
-  TAccountSystemProgram
+): Promise<
+  CloseMarketInstruction<
+    TProgramAddress,
+    TAccountMarket,
+    TAccountMint,
+    TAccountVault,
+    TAccountAdminTokenAccount,
+    TAccountAdmin,
+    TAccountTokenProgram,
+    TAccountAssociatedTokenProgram,
+    TAccountSystemProgram
+  >
 > {
   // Program address.
   const programAddress = config?.programAddress ?? SOLSCORE_PROGRAM_ADDRESS;
@@ -126,7 +187,18 @@ export function getCloseMarketInstruction<
   // Original accounts.
   const originalAccounts = {
     market: { value: input.market ?? null, isWritable: true },
+    mint: { value: input.mint ?? null, isWritable: false },
+    vault: { value: input.vault ?? null, isWritable: true },
+    adminTokenAccount: {
+      value: input.adminTokenAccount ?? null,
+      isWritable: true,
+    },
     admin: { value: input.admin ?? null, isWritable: true },
+    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+    associatedTokenProgram: {
+      value: input.associatedTokenProgram ?? null,
+      isWritable: false,
+    },
     systemProgram: { value: input.systemProgram ?? null, isWritable: false },
   };
   const accounts = originalAccounts as Record<
@@ -135,6 +207,36 @@ export function getCloseMarketInstruction<
   >;
 
   // Resolve default values.
+  if (!accounts.tokenProgram.value) {
+    accounts.tokenProgram.value =
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+  }
+  if (!accounts.vault.value) {
+    accounts.vault.value = await getProgramDerivedAddress({
+      programAddress:
+        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>,
+      seeds: [
+        getAddressEncoder().encode(expectAddress(accounts.market.value)),
+        getAddressEncoder().encode(expectAddress(accounts.tokenProgram.value)),
+        getAddressEncoder().encode(expectAddress(accounts.mint.value)),
+      ],
+    });
+  }
+  if (!accounts.adminTokenAccount.value) {
+    accounts.adminTokenAccount.value = await getProgramDerivedAddress({
+      programAddress:
+        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>,
+      seeds: [
+        getAddressEncoder().encode(expectAddress(accounts.admin.value)),
+        getAddressEncoder().encode(expectAddress(accounts.tokenProgram.value)),
+        getAddressEncoder().encode(expectAddress(accounts.mint.value)),
+      ],
+    });
+  }
+  if (!accounts.associatedTokenProgram.value) {
+    accounts.associatedTokenProgram.value =
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
+  }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =
       '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
@@ -144,7 +246,12 @@ export function getCloseMarketInstruction<
   const instruction = {
     accounts: [
       getAccountMeta(accounts.market),
+      getAccountMeta(accounts.mint),
+      getAccountMeta(accounts.vault),
+      getAccountMeta(accounts.adminTokenAccount),
       getAccountMeta(accounts.admin),
+      getAccountMeta(accounts.tokenProgram),
+      getAccountMeta(accounts.associatedTokenProgram),
       getAccountMeta(accounts.systemProgram),
     ],
     programAddress,
@@ -152,7 +259,133 @@ export function getCloseMarketInstruction<
   } as CloseMarketInstruction<
     TProgramAddress,
     TAccountMarket,
+    TAccountMint,
+    TAccountVault,
+    TAccountAdminTokenAccount,
     TAccountAdmin,
+    TAccountTokenProgram,
+    TAccountAssociatedTokenProgram,
+    TAccountSystemProgram
+  >;
+
+  return instruction;
+}
+
+export type CloseMarketInput<
+  TAccountMarket extends string = string,
+  TAccountMint extends string = string,
+  TAccountVault extends string = string,
+  TAccountAdminTokenAccount extends string = string,
+  TAccountAdmin extends string = string,
+  TAccountTokenProgram extends string = string,
+  TAccountAssociatedTokenProgram extends string = string,
+  TAccountSystemProgram extends string = string,
+> = {
+  market: Address<TAccountMarket>;
+  mint: Address<TAccountMint>;
+  vault: Address<TAccountVault>;
+  adminTokenAccount: Address<TAccountAdminTokenAccount>;
+  admin: TransactionSigner<TAccountAdmin>;
+  tokenProgram?: Address<TAccountTokenProgram>;
+  associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
+  systemProgram?: Address<TAccountSystemProgram>;
+};
+
+export function getCloseMarketInstruction<
+  TAccountMarket extends string,
+  TAccountMint extends string,
+  TAccountVault extends string,
+  TAccountAdminTokenAccount extends string,
+  TAccountAdmin extends string,
+  TAccountTokenProgram extends string,
+  TAccountAssociatedTokenProgram extends string,
+  TAccountSystemProgram extends string,
+  TProgramAddress extends Address = typeof SOLSCORE_PROGRAM_ADDRESS,
+>(
+  input: CloseMarketInput<
+    TAccountMarket,
+    TAccountMint,
+    TAccountVault,
+    TAccountAdminTokenAccount,
+    TAccountAdmin,
+    TAccountTokenProgram,
+    TAccountAssociatedTokenProgram,
+    TAccountSystemProgram
+  >,
+  config?: { programAddress?: TProgramAddress }
+): CloseMarketInstruction<
+  TProgramAddress,
+  TAccountMarket,
+  TAccountMint,
+  TAccountVault,
+  TAccountAdminTokenAccount,
+  TAccountAdmin,
+  TAccountTokenProgram,
+  TAccountAssociatedTokenProgram,
+  TAccountSystemProgram
+> {
+  // Program address.
+  const programAddress = config?.programAddress ?? SOLSCORE_PROGRAM_ADDRESS;
+
+  // Original accounts.
+  const originalAccounts = {
+    market: { value: input.market ?? null, isWritable: true },
+    mint: { value: input.mint ?? null, isWritable: false },
+    vault: { value: input.vault ?? null, isWritable: true },
+    adminTokenAccount: {
+      value: input.adminTokenAccount ?? null,
+      isWritable: true,
+    },
+    admin: { value: input.admin ?? null, isWritable: true },
+    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+    associatedTokenProgram: {
+      value: input.associatedTokenProgram ?? null,
+      isWritable: false,
+    },
+    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+  };
+  const accounts = originalAccounts as Record<
+    keyof typeof originalAccounts,
+    ResolvedAccount
+  >;
+
+  // Resolve default values.
+  if (!accounts.tokenProgram.value) {
+    accounts.tokenProgram.value =
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+  }
+  if (!accounts.associatedTokenProgram.value) {
+    accounts.associatedTokenProgram.value =
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
+  }
+  if (!accounts.systemProgram.value) {
+    accounts.systemProgram.value =
+      '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+  }
+
+  const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+  const instruction = {
+    accounts: [
+      getAccountMeta(accounts.market),
+      getAccountMeta(accounts.mint),
+      getAccountMeta(accounts.vault),
+      getAccountMeta(accounts.adminTokenAccount),
+      getAccountMeta(accounts.admin),
+      getAccountMeta(accounts.tokenProgram),
+      getAccountMeta(accounts.associatedTokenProgram),
+      getAccountMeta(accounts.systemProgram),
+    ],
+    programAddress,
+    data: getCloseMarketInstructionDataEncoder().encode({}),
+  } as CloseMarketInstruction<
+    TProgramAddress,
+    TAccountMarket,
+    TAccountMint,
+    TAccountVault,
+    TAccountAdminTokenAccount,
+    TAccountAdmin,
+    TAccountTokenProgram,
+    TAccountAssociatedTokenProgram,
     TAccountSystemProgram
   >;
 
@@ -166,8 +399,13 @@ export type ParsedCloseMarketInstruction<
   programAddress: Address<TProgram>;
   accounts: {
     market: TAccountMetas[0];
-    admin: TAccountMetas[1];
-    systemProgram: TAccountMetas[2];
+    mint: TAccountMetas[1];
+    vault: TAccountMetas[2];
+    adminTokenAccount: TAccountMetas[3];
+    admin: TAccountMetas[4];
+    tokenProgram: TAccountMetas[5];
+    associatedTokenProgram: TAccountMetas[6];
+    systemProgram: TAccountMetas[7];
   };
   data: CloseMarketInstructionData;
 };
@@ -180,7 +418,7 @@ export function parseCloseMarketInstruction<
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>
 ): ParsedCloseMarketInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 3) {
+  if (instruction.accounts.length < 8) {
     // TODO: Coded error.
     throw new Error('Not enough accounts');
   }
@@ -194,7 +432,12 @@ export function parseCloseMarketInstruction<
     programAddress: instruction.programAddress,
     accounts: {
       market: getNextAccount(),
+      mint: getNextAccount(),
+      vault: getNextAccount(),
+      adminTokenAccount: getNextAccount(),
       admin: getNextAccount(),
+      tokenProgram: getNextAccount(),
+      associatedTokenProgram: getNextAccount(),
       systemProgram: getNextAccount(),
     },
     data: getCloseMarketInstructionDataDecoder().decode(instruction.data),

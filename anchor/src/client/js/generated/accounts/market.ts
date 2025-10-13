@@ -72,8 +72,8 @@ export type Market = {
   odds: Array<bigint>;
   isResolved: boolean;
   winningTeamIndex: Option<number>;
-  totalPool: bigint;
-  createdAt: bigint;
+  maxStakeAmount: bigint;
+  allowedBettors: bigint;
   resolvedAt: Option<bigint>;
   bump: number;
 };
@@ -86,8 +86,8 @@ export type MarketArgs = {
   odds: Array<number | bigint>;
   isResolved: boolean;
   winningTeamIndex: OptionOrNullable<number>;
-  totalPool: number | bigint;
-  createdAt: number | bigint;
+  maxStakeAmount: number | bigint;
+  allowedBettors: number | bigint;
   resolvedAt: OptionOrNullable<number | bigint>;
   bump: number;
 };
@@ -108,8 +108,8 @@ export function getMarketEncoder(): Encoder<MarketArgs> {
       ['odds', getArrayEncoder(getU64Encoder())],
       ['isResolved', getBooleanEncoder()],
       ['winningTeamIndex', getOptionEncoder(getU8Encoder())],
-      ['totalPool', getU64Encoder()],
-      ['createdAt', getI64Encoder()],
+      ['maxStakeAmount', getU64Encoder()],
+      ['allowedBettors', getU64Encoder()],
       ['resolvedAt', getOptionEncoder(getI64Encoder())],
       ['bump', getU8Encoder()],
     ]),
@@ -130,8 +130,8 @@ export function getMarketDecoder(): Decoder<Market> {
     ['odds', getArrayDecoder(getU64Decoder())],
     ['isResolved', getBooleanDecoder()],
     ['winningTeamIndex', getOptionDecoder(getU8Decoder())],
-    ['totalPool', getU64Decoder()],
-    ['createdAt', getI64Decoder()],
+    ['maxStakeAmount', getU64Decoder()],
+    ['allowedBettors', getU64Decoder()],
     ['resolvedAt', getOptionDecoder(getI64Decoder())],
     ['bump', getU8Decoder()],
   ]);
