@@ -38,7 +38,7 @@ const { rpc, sendAndConfirmTransaction } = createSolanaClient({
   urlOrMoniker: 'localnet',
 })
 
-describe('solscore', () => {
+describe('Green Tests', () => {
   before(async () => {
     alice = await createAndAidropSigner()
     bob = await createAndAidropSigner()
