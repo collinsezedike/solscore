@@ -321,7 +321,7 @@ describe('Red Tests', () => {
         const params: solscoreClient.PlaceBetInput = {
           // Args
           amount: bobMaxStakeAmount,
-          teamIndex: 0,
+          teamIndex: 1,
 
           // Accounts
           user: bob,
@@ -482,6 +482,172 @@ describe('Red Tests', () => {
         transactionFailedFlag = true
         expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
           'Market has already been resolved',
+        )
+      } finally {
+        expect(transactionFailedFlag).to.be.true
+      }
+    })
+  })
+
+  describe('Claim Payout', () => {
+    it('should fail if bob tries to claim payout for a wrong bet index', async () => {
+      let transactionFailedFlag = false
+      const params: solscoreClient.ClaimPayoutInput = {
+        // Args
+
+        // Accounts
+        user: bob,
+        userTokenAccount: bobTokenAccount,
+        bet: bobBetAccount,
+        market: bobMarketAccount,
+        mint: mint,
+        vault: bobMarketVault,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+        tokenProgram: TOKEN_PROGRAM_ADDRESS,
+      }
+
+      const ix = solscoreClient.getClaimPayoutInstruction(params)
+      const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+      const tx = createTransaction({
+        feePayer: bob,
+        version: 'legacy',
+        instructions: [ix],
+        latestBlockhash,
+      })
+
+      try {
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      } catch (error: any) {
+        transactionFailedFlag = true
+        expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
+          'Bet team index does not match market winning team index',
+        )
+      } finally {
+        expect(transactionFailedFlag).to.be.true
+      }
+    })
+
+    it('should fail if john tries to claim payout from a market has not been resolved', async () => {
+      // First initialize a new market
+      {
+        const bobNewLeagueName = 'BOB LEAGUE 2'
+        const bobNewSeason = 'BOB SEASON 2'
+
+        const highestOdd = bobOdds.reduce((max, current) => (current > max ? current : max))
+        const amount = highestOdd * bobMaxStakeAmount * bobAllowedBettors
+
+        mint = await createAndMintToken([bob.address, john.address], Number(amount))
+
+        bobTokenAccount = await getAssociatedTokenAccountAddress(mint, bob)
+        bobMarketAccount = await getMarketPDA(bobNewLeagueName, bobNewSeason)
+        bobMarketVault = await getAssociatedTokenAccountAddress(mint, bobMarketAccount)
+
+        johnTokenAccount = await getAssociatedTokenAccountAddress(mint, john)
+        johnBetAccount = await getBetPDA(john.address, bobMarketAccount)
+
+        const params: solscoreClient.InitializeMarketInput = {
+          // Args
+          leagueName: bobNewLeagueName,
+          season: bobNewSeason,
+          odds: bobOdds,
+          teams: bobTeams,
+          allowedBettors: bobAllowedBettors,
+          maxStakeAmount: bobMaxStakeAmount,
+
+          // Accounts
+          admin: bob,
+          adminTokenAccount: bobTokenAccount,
+          market: bobMarketAccount,
+          mint: mint,
+          vault: bobMarketVault,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+          systemProgram: SYSTEM_PROGRAM_ADDRESS,
+          tokenProgram: TOKEN_PROGRAM_ADDRESS,
+        }
+
+        const ix = solscoreClient.getInitializeMarketInstruction(params)
+        const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+        const tx = createTransaction({
+          feePayer: bob,
+          version: 'legacy',
+          instructions: [ix],
+          latestBlockhash,
+        })
+
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      }
+
+      // Next place John's bet
+      {
+        const params: solscoreClient.PlaceBetInput = {
+          // Args
+          amount: bobMaxStakeAmount,
+          teamIndex: 0,
+
+          // Accounts
+          user: john,
+          userTokenAccount: johnTokenAccount,
+          bet: johnBetAccount,
+          market: bobMarketAccount,
+          mint: mint,
+          vault: bobMarketVault,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+          systemProgram: SYSTEM_PROGRAM_ADDRESS,
+          tokenProgram: TOKEN_PROGRAM_ADDRESS,
+        }
+
+        const ix = solscoreClient.getPlaceBetInstruction(params)
+        const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+        const tx = createTransaction({
+          feePayer: john,
+          version: 'legacy',
+          instructions: [ix],
+          latestBlockhash,
+        })
+
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      }
+
+      let transactionFailedFlag = false
+      const params: solscoreClient.ClaimPayoutInput = {
+        // Args
+
+        // Accounts
+        user: john,
+        userTokenAccount: johnTokenAccount,
+        bet: johnBetAccount,
+        market: bobMarketAccount,
+        mint: mint,
+        vault: bobMarketVault,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+        tokenProgram: TOKEN_PROGRAM_ADDRESS,
+      }
+
+      const ix = solscoreClient.getClaimPayoutInstruction(params)
+      const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+      const tx = createTransaction({
+        feePayer: john,
+        version: 'legacy',
+        instructions: [ix],
+        latestBlockhash,
+      })
+
+      try {
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      } catch (error: any) {
+        transactionFailedFlag = true
+        expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
+          'Market has not been resolved',
         )
       } finally {
         expect(transactionFailedFlag).to.be.true
