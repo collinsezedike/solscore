@@ -30,7 +30,7 @@ const bobTeams = ['BOB TEAM 1', 'BOB TEAM 2', 'BOB TEAM 3', 'BOB TEAM 4']
 const bobOdds = [BigInt(1), BigInt(2), BigInt(3), BigInt(4)]
 const bobAllowedBettors = BigInt(1)
 const bobMaxStakeAmount = BigInt(100)
-// const bobWinningTeamIndex = 0
+const bobWinningTeamIndex = 0
 
 const { rpc, sendAndConfirmTransaction } = createSolanaClient({
   urlOrMoniker: 'localnet',
@@ -384,6 +384,104 @@ describe('Red Tests', () => {
         transactionFailedFlag = true
         expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
           'Market cannot accept any more bets',
+        )
+      } finally {
+        expect(transactionFailedFlag).to.be.true
+      }
+    })
+  })
+
+  describe('Resolve Market', () => {
+    it('should fail if bob tries to resolve a market with an out-of-bounds index', async () => {
+      let transactionFailedFlag = false
+      const params: solscoreClient.ResolveMarketInput = {
+        // Args
+        winningTeamIndex: bobTeams.length,
+
+        // Accounts
+        admin: bob,
+        market: bobMarketAccount,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      }
+
+      const ix = solscoreClient.getResolveMarketInstruction(params)
+      const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+      const tx = createTransaction({
+        feePayer: bob,
+        version: 'legacy',
+        instructions: [ix],
+        latestBlockhash,
+      })
+
+      try {
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      } catch (error: any) {
+        transactionFailedFlag = true
+        expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
+          'Invalid team index',
+        )
+      } finally {
+        expect(transactionFailedFlag).to.be.true
+      }
+    })
+
+    it('should fail if bob tries to resolve a market that has already been resolved', async () => {
+      // First resolve the market
+      {
+        const params: solscoreClient.ResolveMarketInput = {
+          // Args
+          winningTeamIndex: bobWinningTeamIndex,
+
+          // Accounts
+          admin: bob,
+          market: bobMarketAccount,
+          systemProgram: SYSTEM_PROGRAM_ADDRESS,
+        }
+
+        const ix = solscoreClient.getResolveMarketInstruction(params)
+        const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+        const tx = createTransaction({
+          feePayer: bob,
+          version: 'legacy',
+          instructions: [ix],
+          latestBlockhash,
+        })
+
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      }
+
+      let transactionFailedFlag = false
+      const params: solscoreClient.ResolveMarketInput = {
+        // Args
+        winningTeamIndex: bobWinningTeamIndex,
+
+        // Accounts
+        admin: bob,
+        market: bobMarketAccount,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      }
+
+      const ix = solscoreClient.getResolveMarketInstruction(params)
+      const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
+
+      const tx = createTransaction({
+        feePayer: bob,
+        version: 'legacy',
+        instructions: [ix],
+        latestBlockhash,
+      })
+
+      try {
+        const signedTransaction = await signTransactionMessageWithSigners(tx)
+        await sendAndConfirmTransaction(signedTransaction)
+      } catch (error: any) {
+        transactionFailedFlag = true
+        expect(error.context.logs.filter((log: string) => log.includes('AnchorError'))[0]).to.contain(
+          'Market has already been resolved',
         )
       } finally {
         expect(transactionFailedFlag).to.be.true
