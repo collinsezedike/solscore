@@ -20,8 +20,18 @@ pub mod solscore {
         season: String,
         teams: Vec<String>,
         odds: Vec<u64>,
+        max_stake_amount: u64,
+        allowed_bettors: u64,
     ) -> Result<()> {
-        _initialize_market(ctx, league_name, season, teams, odds)
+        _initialize_market(
+            ctx,
+            league_name,
+            season,
+            teams,
+            odds,
+            max_stake_amount,
+            allowed_bettors,
+        )
     }
 
     pub fn place_bet(ctx: Context<PlaceBet>, team_index: u8, amount: u64) -> Result<()> {
