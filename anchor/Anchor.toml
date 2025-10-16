@@ -5,15 +5,16 @@ package_manager = "yarn"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-solscore = "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H"
+[programs.devnet]
+solscore = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
+
 
 [scripts]
 test = "yarn tsx --test anchor/tests/*.test.ts"
