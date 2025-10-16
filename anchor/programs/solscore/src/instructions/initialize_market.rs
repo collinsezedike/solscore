@@ -37,6 +37,9 @@ pub fn _initialize_market(
     let highest_odd = odds.iter().max().unwrap();
     let amount = max_stake_amount * highest_odd * allowed_bettors;
 
+    // Check if Admin has enough funds before transfer
+    require!(admin_token_account.amount >= amount, SolscoreError::InsufficientBalance);
+
     let transfer_accounts = Transfer {
         from: admin_token_account.to_account_info(),
         to: vault.to_account_info(),
@@ -59,6 +62,8 @@ pub fn _initialize_market(
         resolved_at: None,
     });
 
+    msg!("Funding market vault with {} tokens", amount);
+    
     Ok(())
 }
 
