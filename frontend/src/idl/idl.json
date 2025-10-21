@@ -1,11 +1,5 @@
-/**
- * Program IDL in camelCase format in order to be used in JS/TS.
- *
- * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/solscore.json`.
- */
-export type Solscore = {
-  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+{
+  "address": "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK",
   "metadata": {
     "name": "solscore",
     "version": "0.1.0",
@@ -14,7 +8,7 @@ export type Solscore = {
   },
   "instructions": [
     {
-      "name": "claimPayout",
+      "name": "claim_payout",
       "discriminator": [
         127,
         240,
@@ -45,12 +39,12 @@ export type Solscore = {
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "market"
+                "account": "Market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "market"
+                "account": "Market"
               }
             ]
           }
@@ -66,7 +60,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -137,7 +131,7 @@ export type Solscore = {
           }
         },
         {
-          "name": "userTokenAccount",
+          "name": "user_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -147,7 +141,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -205,22 +199,22 @@ export type Solscore = {
           "name": "mint"
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
+          "name": "associated_token_program",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "closeMarket",
+      "name": "close_market",
       "discriminator": [
         88,
         154,
@@ -251,12 +245,12 @@ export type Solscore = {
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "market"
+                "account": "Market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "market"
+                "account": "Market"
               }
             ]
           }
@@ -275,7 +269,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -322,7 +316,7 @@ export type Solscore = {
           }
         },
         {
-          "name": "adminTokenAccount",
+          "name": "admin_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -332,7 +326,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -387,22 +381,22 @@ export type Solscore = {
           ]
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
+          "name": "associated_token_program",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "initializeMarket",
+      "name": "initialize_market",
       "discriminator": [
         35,
         35,
@@ -432,7 +426,7 @@ export type Solscore = {
               },
               {
                 "kind": "arg",
-                "path": "leagueName"
+                "path": "league_name"
               },
               {
                 "kind": "arg",
@@ -452,7 +446,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -507,7 +501,7 @@ export type Solscore = {
           "signer": true
         },
         {
-          "name": "adminTokenAccount",
+          "name": "admin_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -517,7 +511,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -564,21 +558,21 @@ export type Solscore = {
           }
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
+          "name": "associated_token_program",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "leagueName",
+          "name": "league_name",
           "type": "string"
         },
         {
@@ -598,17 +592,17 @@ export type Solscore = {
           }
         },
         {
-          "name": "maxStakeAmount",
+          "name": "max_stake_amount",
           "type": "u64"
         },
         {
-          "name": "allowedBettors",
+          "name": "allowed_bettors",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "placeBet",
+      "name": "place_bet",
       "discriminator": [
         222,
         62,
@@ -663,12 +657,12 @@ export type Solscore = {
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "market"
+                "account": "Market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "market"
+                "account": "Market"
               }
             ]
           }
@@ -684,7 +678,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -731,7 +725,7 @@ export type Solscore = {
           }
         },
         {
-          "name": "userTokenAccount",
+          "name": "user_token_account",
           "writable": true,
           "pda": {
             "seeds": [
@@ -741,7 +735,7 @@ export type Solscore = {
               },
               {
                 "kind": "account",
-                "path": "tokenProgram"
+                "path": "token_program"
               },
               {
                 "kind": "account",
@@ -796,21 +790,21 @@ export type Solscore = {
           "name": "mint"
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
+          "name": "associated_token_program",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "teamIndex",
+          "name": "team_index",
           "type": "u8"
         },
         {
@@ -820,7 +814,7 @@ export type Solscore = {
       ]
     },
     {
-      "name": "resolveMarket",
+      "name": "resolve_market",
       "discriminator": [
         155,
         23,
@@ -851,12 +845,12 @@ export type Solscore = {
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "market"
+                "account": "Market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "market"
+                "account": "Market"
               }
             ]
           }
@@ -870,13 +864,13 @@ export type Solscore = {
           ]
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "winningTeamIndex",
+          "name": "winning_team_index",
           "type": "u8"
         }
       ]
@@ -884,7 +878,7 @@ export type Solscore = {
   ],
   "accounts": [
     {
-      "name": "bet",
+      "name": "Bet",
       "discriminator": [
         147,
         23,
@@ -897,7 +891,7 @@ export type Solscore = {
       ]
     },
     {
-      "name": "market",
+      "name": "Market",
       "discriminator": [
         219,
         190,
@@ -913,63 +907,63 @@ export type Solscore = {
   "errors": [
     {
       "code": 6000,
-      "name": "emptyTeamsOrOdds",
+      "name": "EmptyTeamsOrOdds",
       "msg": "Market teams and odds vectors must not be empty"
     },
     {
       "code": 6001,
-      "name": "teamsAndOddsLengthMismatch",
+      "name": "TeamsAndOddsLengthMismatch",
       "msg": "Market teams and odds vectors must have the same length"
     },
     {
       "code": 6002,
-      "name": "marketAllowedBettorsLimitExceeded",
+      "name": "MarketAllowedBettorsLimitExceeded",
       "msg": "Market cannot accept any more bets"
     },
     {
       "code": 6003,
-      "name": "marketResolved",
+      "name": "MarketResolved",
       "msg": "Market has already been resolved"
     },
     {
       "code": 6004,
-      "name": "marketNotResolved",
+      "name": "MarketNotResolved",
       "msg": "Market has not been resolved"
     },
     {
       "code": 6005,
-      "name": "invalidBetAmount",
+      "name": "InvalidBetAmount",
       "msg": "Bet amount must be greater than zero and less than the market maximum stake amount"
     },
     {
       "code": 6006,
-      "name": "betNotWon",
+      "name": "BetNotWon",
       "msg": "Bet team index does not match market winning team index"
     },
     {
       "code": 6007,
-      "name": "insufficientBalance",
+      "name": "InsufficientBalance",
       "msg": "Insufficient USDC balance"
     },
     {
       "code": 6008,
-      "name": "invalidTeamIndex",
+      "name": "InvalidTeamIndex",
       "msg": "Invalid team index"
     },
     {
       "code": 6009,
-      "name": "mathOverflow",
+      "name": "MathOverflow",
       "msg": "Mathematical overflow"
     },
     {
       "code": 6010,
-      "name": "mathUnderflow",
+      "name": "MathUnderflow",
       "msg": "Mathematical underflow"
     }
   ],
   "types": [
     {
-      "name": "bet",
+      "name": "Bet",
       "type": {
         "kind": "struct",
         "fields": [
@@ -982,7 +976,7 @@ export type Solscore = {
             "type": "pubkey"
           },
           {
-            "name": "teamIndex",
+            "name": "team_index",
             "type": "u8"
           },
           {
@@ -990,7 +984,7 @@ export type Solscore = {
             "type": "u64"
           },
           {
-            "name": "payoutAmount",
+            "name": "payout_amount",
             "type": {
               "option": "u64"
             }
@@ -1007,7 +1001,7 @@ export type Solscore = {
       }
     },
     {
-      "name": "market",
+      "name": "Market",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1016,7 +1010,7 @@ export type Solscore = {
             "type": "pubkey"
           },
           {
-            "name": "leagueName",
+            "name": "league_name",
             "type": "string"
           },
           {
@@ -1036,25 +1030,25 @@ export type Solscore = {
             }
           },
           {
-            "name": "isResolved",
+            "name": "is_resolved",
             "type": "bool"
           },
           {
-            "name": "winningTeamIndex",
+            "name": "winning_team_index",
             "type": {
               "option": "u8"
             }
           },
           {
-            "name": "maxStakeAmount",
+            "name": "max_stake_amount",
             "type": "u64"
           },
           {
-            "name": "allowedBettors",
+            "name": "allowed_bettors",
             "type": "u64"
           },
           {
-            "name": "resolvedAt",
+            "name": "resolved_at",
             "type": {
               "option": "i64"
             }
@@ -1067,4 +1061,4 @@ export type Solscore = {
       }
     }
   ]
-};
+}

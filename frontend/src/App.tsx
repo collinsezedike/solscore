@@ -1,36 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import Navbar from './Navbar'
+import HomePage from './pages/homepage/HomePage'
+import Market from './pages/market/Market'
+import Bets from './pages/bets/Bets'
+import Admin from './pages/admin/AdminPage'
+import MarketDetails from './pages/market/components/MarketDetails'
+import AdminMarkets from './pages/adminMarkets/AdminMarkets'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-
-        <WalletMultiButton />
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+       <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/markets" element={<Market />} />
+        <Route path="/markets/:marketId" element={<MarketDetails />} />
+        <Route path="/bets" element={<Bets />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/markets" element={<AdminMarkets />} />
+          {/* <Route path="/markets" element={<Markets />} />
+          <Route path="/markets/:id" element={<MarketDetail />} />
+          <Route path="/bets" element={<Bets />} />
+          <Route path="/bets/:id" element={<BetDetail />} />
+          <Route path="/settings" element={<Settings />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* <Route path="*" element={<NotFound />} /> */} 
+        </Routes>
     </>
   )
 }

@@ -1,16 +1,23 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import { Providers } from './contexts/Providers.tsx'
-import {createBrowserRouter,RouterProvider} from 'react-router-dom'
-import routes from './contexts/RouteProvider.tsx'
-
-const router = createBrowserRouter(routes)
+import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar.tsx'
+import { AppSidebar } from './components/app-sidebar.tsx'
+import App from './App.tsx'
+import { ThemeProvider } from './components/theme-provider.tsx'
+import { Toaster } from './components/ui/sonner.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Providers>
-      <RouterProvider router={router} />
-    </Providers>
+    <BrowserRouter>
+      <Providers>
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <App />
+          <Toaster />
+          </ThemeProvider>
+      </Providers>
+    </BrowserRouter>
   </StrictMode>
 )
