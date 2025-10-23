@@ -33,33 +33,10 @@ export function MarketCard({ publicKey, account }: MarketCardProps) {
     isResolved
     } = account;
     
-    const test = async () => {
-        try {
-            console.log(isResolved)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-  // Convert BN to number - totalStaked is a BN object
-//   const totalStakedNum = typeof totalStaked === 'object' && 'toNumber' in totalStaked 
-//     ? totalStaked.toNumber() 
-//     : Number(totalStaked);
-  
-//   const allowedBettorsNum = typeof allowedBettors === 'object' && 'toNumber' in allowedBettors
-//     ? allowedBettors.toNumber()
-//     : Number(allowedBettors);
-
-  // Calculate total pool (convert from lamports, assuming 6 decimals for SPL token)
-//   const totalPool = totalStakedNum / 1_000_000;
 
   // Create market title from league and season
   const marketTitle = `${leagueName} - ${season}`;
 
-  // Format teams display
-  const teamsDisplay = teams.length > 2 
-    ? `${teams.slice(0, 2).join(" vs ")} +${teams.length - 2} more`
-    : teams.join(" vs ");
 
   return (
     <Card className="group hover:border-primary/50 transition-all duration-300 hover:glow-orange cursor-pointer bg-gradient-dark">
@@ -77,7 +54,7 @@ export function MarketCard({ publicKey, account }: MarketCardProps) {
           </div>
         </div>
         <CardTitle className="text-lg">{marketTitle}</CardTitle>
-        <p className="text-sm text-muted-foreground mt-1">{teamsDisplay}</p>
+        <p className="text-sm text-muted-foreground mt-1">Who wins the League?</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between text-sm">
@@ -113,7 +90,6 @@ export function MarketCard({ publicKey, account }: MarketCardProps) {
             </p>
           )}
         </div>
-<Button onClick={test}>test</Button>
         <Button
           className="w-full gradient-orange hover:opacity-90 transition-opacity"
           onClick={() => navigate(`/markets/${publicKey}`)}

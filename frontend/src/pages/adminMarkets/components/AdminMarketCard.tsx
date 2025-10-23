@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { PublicKey } from "@solana/web3.js";
 import AdminMarketDialog from "./AdminMarketDialog";
+import CloseMarketDialog from "./CloseMarketDialog";
 
 interface MarketCardProps {
   publicKey: string;
@@ -109,6 +110,12 @@ export function AdminMarketCard({ publicKey, account }: MarketCardProps) {
           teams={teams}
           isResolved={isResolved}
         />
+
+        <CloseMarketDialog marketPublicKey={publicKey}
+          leagueName={leagueName}
+          season={season}
+          isResolved={isResolved} />
+        
       </CardContent>
     </Card>
   );

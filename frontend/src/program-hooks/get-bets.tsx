@@ -59,7 +59,7 @@ export const useGetUserBets = () => {
     queryFn: getUserBets,
     enabled: !!wallet && !!publicKey,
     refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
+    staleTime: 30000,
   });
 
   return {
@@ -146,7 +146,7 @@ export const useGetMarketBets = (marketPublicKey?: string) => {
       const bets = await program.account.bet.all([
         {
           memcmp: {
-            offset: 8 + 32, // Skip discriminator (8) + user pubkey (32)
+            offset: 8 + 32,
             bytes: marketPDA.toBase58(),
           },
         },
