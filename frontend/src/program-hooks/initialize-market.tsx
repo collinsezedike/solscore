@@ -4,7 +4,7 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_I
 import { useMutation } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { Solscore } from "@/idlTypes/idlType";
+// import { Solscore } from "@/idlTypes/idlType";
 import { toast } from "sonner";
 
 const mintAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";

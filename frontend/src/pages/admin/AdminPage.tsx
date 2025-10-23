@@ -108,14 +108,14 @@ export default function Admin() {
     });
 
     // Reset form
-    // setLeagueName("");
-    // setSeason("");
-    // setmaxStakeAmount("");
-    // setAllowedBettors("");
-    // setTeamsOdds([
-    //   { id: "1", teamName: "", odds: "" },
-    //   { id: "2", teamName: "", odds: "" },
-    // ]);
+    setLeagueName("");
+    setSeason("");
+    setmaxStakeAmount("");
+    setAllowedBettors("");
+    setTeamsOdds([
+      { id: "1", teamName: "", odds: "" },
+      { id: "2", teamName: "", odds: "" },
+    ]);
   };
 
   return (
@@ -170,7 +170,7 @@ export default function Admin() {
               {/* Market Parameters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="maxStakeAmount">Max Stake Amount (SOL)</Label>
+                  <Label htmlFor="maxStakeAmount">Max Stake Amount (USDC)</Label>
                   <Input
                     id="maxStakeAmount"
                     type="number"
@@ -293,7 +293,7 @@ export default function Admin() {
                 type="submit"
                   size="lg"
                   disabled
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
+                className="w-full bg-gradient-to-r from-primary  hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
               >
                     <Loader2Icon className="animate-spin" />
                 Creating Market
@@ -301,7 +301,7 @@ export default function Admin() {
             <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
+                className="w-full bg-gradient-to-r bg-orange-600 hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
               >
                 Create Market
               </Button>
@@ -310,7 +310,7 @@ export default function Admin() {
             <Button
                onClick={() => navigate(`/admin/markets/`)}
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
+                className="mt-6 w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
               >
                 View My Markets
               </Button>
