@@ -1,4 +1,3 @@
-import React from 'react'
 import WalletButton from './WalletButton'
 import { ModeToggle } from './components/mode-toggle'
 

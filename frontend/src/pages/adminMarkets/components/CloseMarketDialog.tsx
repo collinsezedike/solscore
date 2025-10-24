@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 
 import { Loader2, Trophy } from "lucide-react";
-import { toast } from "sonner";
 import { useCloseMarket } from '@/program-hooks/close-market';
 
 interface CloseMarketDialogProps {
@@ -26,7 +25,7 @@ const CloseMarketDialog = ({
   marketPublicKey,
   leagueName,
   season,
-  isResolved
+  // isResolved
 }: CloseMarketDialogProps) => {
   const [open, setOpen] = useState(false);
     const { closeMarket, isPending } = useCloseMarket();

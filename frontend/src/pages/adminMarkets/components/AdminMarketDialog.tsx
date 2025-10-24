@@ -52,8 +52,6 @@ const AdminMarketDialog = ({
     try {
       await resolveMarket({
         marketPublicKey,
-        leagueName,
-        season,
         winningTeamIndex: parseInt(selectedTeamIndex),
       });
 

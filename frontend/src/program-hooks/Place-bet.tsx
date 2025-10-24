@@ -4,7 +4,7 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_I
 import { useMutation } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { Solscore } from "@/idlTypes/idlType";
+// import { Solscore } from "@/idlTypes/idlType";
 import { toast } from "sonner";
 
 const mintAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
@@ -12,10 +12,8 @@ const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
 
 interface PlaceBetParams {
   marketPublicKey: string;
-  leagueName: string;
-  season: string;
   teamIndex: number;
-  amount: number; // Amount in SOL (will be converted to lamports)
+  amount: number; 
 }
 
 export const usePlaceBet = () => {
@@ -25,8 +23,6 @@ export const usePlaceBet = () => {
 
   const placeBet = async ({
     marketPublicKey,
-    leagueName,
-    season,
     teamIndex,
     amount,
   }: PlaceBetParams) => {

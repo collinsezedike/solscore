@@ -1,5 +1,4 @@
 import { DashboardLayout } from '@/components/DashboardLayout'
-import WelcomeCard from './components/WelcomeCard'
 import { HomeCarousel } from './components/HomeCarousel'
 import { MarketCard } from '../market/components/MarketCard'
 import { useGetAllMarkets } from '@/program-hooks/get-market'

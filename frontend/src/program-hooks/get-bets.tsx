@@ -29,7 +29,7 @@ export const useGetUserBets = () => {
     if (!wallet || !publicKey) return [];
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
       const program = new Program<Solscore>(idl as Solscore, provider);
 
@@ -136,7 +136,7 @@ export const useGetMarketBets = (marketPublicKey?: string) => {
     if (!wallet || !marketPublicKey) return [];
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
       const program = new Program<Solscore>(idl as Solscore, provider);
 

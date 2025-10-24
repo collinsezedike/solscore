@@ -50,10 +50,6 @@ export const useInitializeMarket = () => {
       const vault = await getAssociatedTokenAddress(mintAddressPubKey, marketPDA, true);
       const adminTokenAccount = await getAssociatedTokenAddress(mintAddressPubKey, userAddressPubKey);
 
-      console.log("Vault:", vault.toBase58());
-      console.log("Admin ATA:", adminTokenAccount.toBase58());
-      console.log("Market PDA:", marketPDA.toBase58());
-        console.log(programId.toBase58());
 
       // Convert numbers to BN (BigNumber) 
       const maxStakeAmountBN = new BN(maxStakeAmount);

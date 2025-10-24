@@ -1,11 +1,10 @@
-import { Calendar, ChevronDown, Home, Inbox, LogOut, Search, Settings, TrendingUp, User, Wallet } from "lucide-react"
+import { Home, LogOut, Settings, TrendingUp, Wallet } from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-    const path = import.meta.env.VITE_PATH;
+    // const path = import.meta.env.VITE_PATH;
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
@@ -51,7 +50,7 @@ export function AppSidebar() {
       <SidebarContent className="p-4">
         <SidebarMenu className="space-y-2">
           {navItems.map((item) => {
-            const Icon = item.icon
+            // const Icon = item.icon
             const isActive = pathname === item.href
             return (
               <SidebarMenuItem key={item.href}>

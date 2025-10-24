@@ -19,7 +19,7 @@ export default function Admin() {
     const navigate = useNavigate();
     const path = import.meta.env.VITE_PATH;
 
-  const { createMarket, isPending, data } = useInitializeMarket();
+  const { createMarket, isPending } = useInitializeMarket();
   const [leagueName, setLeagueName] = useState("");
   const [season, setSeason] = useState("");
   const [maxStake, setmaxStakeAmount] = useState("");

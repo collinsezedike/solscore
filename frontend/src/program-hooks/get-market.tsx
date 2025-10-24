@@ -1,11 +1,11 @@
 import { AnchorProvider, Program, BN } from "@coral-xyz/anchor";
-import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useQuery } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey } from "@solana/web3.js";
 import { Solscore } from "@/idlTypes/idlType";
 
-const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
+// const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
 
 interface Market {
   publicKey: string;
@@ -83,7 +83,7 @@ export const useGetMarket = (marketPublicKey?: string) => {
     if (!wallet || !marketPublicKey) return null;
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
       const program = new Program<Solscore>(idl as Solscore, provider);
 
@@ -129,7 +129,7 @@ export const useGetAllMarkets = () => {
     if (!wallet) return [];
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
       const program = new Program<Solscore>(idl as Solscore, provider);
 

@@ -7,7 +7,6 @@ import { useGetMarket } from "@/program-hooks/get-market";
 import { 
   ArrowLeft, 
   TrendingUp, 
-  Users, 
   Coins,
   Trophy,
   Loader2,
@@ -58,16 +57,6 @@ export default function MarketDetails() {
 
   const { account } = market;
   
-  // Convert BN values to numbers
-//   const allowedBettorsNum = typeof account.allowedBettors === 'object' && 'toNumber' in account.allowedBettors
-//     ? account.allowedBettors.toNumber()
-//     : Number(account.allowedBettors);
-
-//   const maxStakeAmountAmountNum = typeof account.maxStakeAmountAmount === 'object' && 'toNumber' in account.maxStakeAmountAmount
-//     ? account.maxStakeAmountAmount.toNumber()
-//     : Number(account.maxStakeAmountAmount || 0);
-
-//   const maxStakeAmount = maxStakeAmountAmountNum / 1_000_000; // Convert from lamports
 
   const handlePlaceBet = () => {
     if (selectedTeam === null) {
@@ -90,8 +79,6 @@ if (!market || !marketId) {
   }
       placeBet({
   marketPublicKey: marketId,
-  leagueName: account.leagueName,
-  season: account.season,
   teamIndex: selectedTeam,
   amount: parseFloat(stakeAmount),
 });
@@ -297,9 +284,9 @@ if (!market || !marketId) {
                 <Button
                   className="w-full gradient-orange hover:opacity-90 text-base py-6"
                   onClick={handlePlaceBet}
-                  disabled={account.isResolved || selectedTeam === null || !stakeAmount}
+                  disabled={account.isResolved || selectedTeam === null || !stakeAmount || isPending}
                 >
-                  {account.isResolved ? "Market Closed" : "Place Bet"}
+                  {isPending ? "Please Wait" : "Place Bet"}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">

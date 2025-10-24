@@ -4,11 +4,11 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_I
 import { useMutation } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { Solscore } from "@/idlTypes/idlType";
+// import { Solscore } from "@/idlTypes/idlType";
 import { toast } from "sonner";
 
 const mintAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
-const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
+// const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
 
 interface CloseMarketParams {
   marketPublicKey: string;
@@ -32,9 +32,9 @@ export const useCloseMarket = () => {
     }
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
-      const program = new Program<Solscore>(idl as Solscore, provider);
+      const program = new Program(idl, provider);
       
       const mintAddressPubKey = new PublicKey(mintAddress);
       const adminPubKey = publicKey;
@@ -44,7 +44,7 @@ export const useCloseMarket = () => {
       const vault = await getAssociatedTokenAddress(
         mintAddressPubKey, 
         marketPDA, 
-        true // allowOwnerOffCurve
+        true 
       );
       
       const adminTokenAccount = await getAssociatedTokenAddress(

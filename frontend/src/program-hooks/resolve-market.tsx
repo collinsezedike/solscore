@@ -6,12 +6,10 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { Solscore } from "@/idlTypes/idlType";
 import { toast } from "sonner";
 
-const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
+// const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
 
 interface ResolveMarketParams {
   marketPublicKey: string;
-  leagueName: string;
-  season: string;
   winningTeamIndex: number ;
 }
 
@@ -22,8 +20,6 @@ export const useResolveMarket = () => {
 
   const resolveMarket = async ({
     marketPublicKey,
-    leagueName,
-    season,
     winningTeamIndex,
   }: ResolveMarketParams) => {
     if (!wallet || !publicKey) throw new Error("Wallet not connected!");
@@ -32,7 +28,7 @@ export const useResolveMarket = () => {
     }
 
     try {
-      const programId = new PublicKey(PROGRAM_ID);
+      // const programId = new PublicKey(PROGRAM_ID);
       const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
       const program = new Program<Solscore>(idl as Solscore, provider);
       
