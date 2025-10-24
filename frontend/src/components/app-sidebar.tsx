@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
+    const path = import.meta.env.VITE_PATH;
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/markets", label: "Markets", icon: TrendingUp },
     { href: "/bets", label: "My Bets", icon: Wallet },
-    { href: "/admin", label: "Admin", icon: User },
+    // { href: `/${path}`, label: "Admin", icon: User },
     { href: "/wallet", label: "Wallet", icon: History },
     { href: "/settings", label: "Settings", icon: Settings },
   ]

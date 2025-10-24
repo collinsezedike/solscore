@@ -17,7 +17,8 @@ interface TeamOdds {
 
 export default function Admin() {
     const navigate = useNavigate();
-  
+    const path = import.meta.env.VITE_PATH;
+
   const { createMarket, isPending, data } = useInitializeMarket();
   const [leagueName, setLeagueName] = useState("");
   const [season, setSeason] = useState("");
@@ -308,7 +309,7 @@ export default function Admin() {
           }
             </form>
             <Button
-               onClick={() => navigate(`/admin/markets/`)}
+               onClick={() => navigate(`/${path}/markets`)}
                 size="lg"
                 className="mt-6 w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-base sm:text-lg h-12 sm:h-14"
               >
