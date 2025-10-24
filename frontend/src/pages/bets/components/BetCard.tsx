@@ -90,7 +90,6 @@ export function BetCard({
 
   const config = statusConfig[status];
   const StatusIcon = config.icon;
-
   return (
     <Card className="bg-gradient-dark border-border/50 hover:border-primary/50 transition-all">
       <CardHeader>
@@ -106,6 +105,7 @@ export function BetCard({
         </div>
         <CardTitle className="text-lg">{leagueName}</CardTitle>
         <p className="text-sm text-muted-foreground">{season}</p>
+        <p>Who wins the League?</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="p-3 bg-muted/50 rounded-lg">

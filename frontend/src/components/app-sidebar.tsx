@@ -1,4 +1,4 @@
-import { Home, LogOut, Settings, TrendingUp, Wallet } from "lucide-react"
+import { Home, TrendingUp, Wallet } from "lucide-react"
 
 import {
   Sidebar,
@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils"
     { href: "/markets", label: "Markets", icon: TrendingUp },
     { href: "/bets", label: "My Bets", icon: Wallet },
     // { href: `/${path}`, label: "Admin", icon: User },
-    { href: "/wallet", label: "Wallet", icon: History },
-    { href: "/settings", label: "Settings", icon: Settings },
+    // { href: "/wallet", label: "Wallet", icon: History },
+    // { href: "/settings", label: "Settings", icon: Settings },
   ]
 
 export function AppSidebar() {
@@ -80,16 +80,8 @@ export function AppSidebar() {
      
       </SidebarContent>
            <SidebarFooter className="border-t border-sidebar-border p-4 space-y-3">
-        <Link
-          to="/wallet"
-          className="w-full flex items-center gap-2 px-4 py-2 rounded-lg bg-sidebar-accent/10 hover:bg-sidebar-accent/20 text-sidebar-foreground transition-colors"
-        >
-          <Wallet className="w-4 h-4" />
-          <span className="text-sm font-medium">Wallet</span>
-        </Link>
         <button className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
-          <LogOut className="w-4 h-4" />
-          <span className="text-sm font-medium">Logout</span>
+          <span className="text-sm font-medium">Settings</span>
         </button>
           </SidebarFooter>
 </Sidebar>

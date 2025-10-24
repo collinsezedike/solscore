@@ -6,11 +6,9 @@ import { useGetAllMarkets } from '@/program-hooks/get-market'
 const HomePage = () => {
   const { markets } = useGetAllMarkets();
   const activeMarkets = markets.filter((market) => {
-    console.log(market.account.isResolved == false)
       return market.account.isResolved === false;
   });
   const showThreeActiveMarkets = activeMarkets.slice(0, 3);
-  console.log(showThreeActiveMarkets);
   
   return (
     <DashboardLayout>

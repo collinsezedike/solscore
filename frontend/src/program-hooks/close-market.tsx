@@ -8,7 +8,6 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { toast } from "sonner";
 
 const mintAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
-// const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
 
 interface CloseMarketParams {
   marketPublicKey: string;

@@ -5,8 +5,6 @@ import idl from "@/idl/idl.json";
 import { PublicKey } from "@solana/web3.js";
 import { Solscore } from "@/idlTypes/idlType";
 
-// const PROGRAM_ID = "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK";
-
 interface Market {
   publicKey: string;
   account: {
@@ -135,7 +133,6 @@ export const useGetAllMarkets = () => {
 
       // Fetch all market accounts
       const markets = await program.account.market.all();
-      console.log(markets);
       return markets.map((market) => ({
         publicKey: market.publicKey.toBase58(),
         account: market.account as any,

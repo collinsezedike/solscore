@@ -43,7 +43,6 @@ export const useGetUserBets = () => {
         },
       ]);
 
-        console.log(bets)
       return bets.map((bet) => ({
         publicKey: bet.publicKey.toBase58(),
         account: bet.account as any,
