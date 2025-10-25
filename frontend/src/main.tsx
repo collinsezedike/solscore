@@ -1,5 +1,9 @@
 import { Buffer } from "buffer";
-window.Buffer = Buffer;
+if (typeof window !== "undefined") {
+  window.Buffer = Buffer;
+  globalThis.Buffer = Buffer;
+}
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
