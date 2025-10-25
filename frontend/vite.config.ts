@@ -13,6 +13,17 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      buffer: 'buffer',
+    },
+  },
+  define: {
+    'global': 'globalThis', // Add this
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis', // Add this
+      },
     },
   },
 })

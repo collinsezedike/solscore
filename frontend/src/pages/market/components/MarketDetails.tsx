@@ -134,7 +134,7 @@ if (!market || !marketId) {
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Max Stake</p>
                   <p className="text-2xl font-bold text-primary">
-                    {market.account.maxStakeAmount.toString()} SOL
+                    {market.account.maxStakeAmount.toString()} USDC
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -244,7 +244,7 @@ if (!market || !marketId) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="stake">Stake Amount (SOL)</Label>
+                  <Label htmlFor="stake">Stake Amount (USDC)</Label>
                   <Input
                     id="stake"
                     type="number"
@@ -258,7 +258,7 @@ if (!market || !marketId) {
                     className="text-base"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Max: {market.account.maxStakeAmount.toString()} SOL
+                    Max: {market.account.maxStakeAmount.toString()} USDC
                   </p>
                 </div>
 
@@ -266,7 +266,7 @@ if (!market || !marketId) {
                   <div className="p-4 bg-primary/10 border border-primary/50 rounded-lg space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Your Stake</span>
-                      <span className="font-semibold">{parseFloat(stakeAmount).toFixed(2)} SOL</span>
+                      <span className="font-semibold">{parseFloat(stakeAmount).toFixed(2)} USDC</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Odds</span>
@@ -275,7 +275,7 @@ if (!market || !marketId) {
                     <div className="border-t border-primary/30 pt-3 flex justify-between items-center">
                       <span className="font-semibold text-sm">Potential Win</span>
                       <span className="font-bold text-primary text-xl">
-                        {potentialWin} SOL
+                        {potentialWin} USDC
                       </span>
                     </div>
                   </div>
