@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 // import { Solscore } from "@/idlTypes/idlType";
+import {Buffer} from "buffer"
 import { toast } from "sonner";
 
 const mintAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";

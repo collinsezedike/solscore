@@ -2,6 +2,7 @@ import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useMutation } from "@tanstack/react-query";
+import {Buffer} from "buffer"
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 // import { Solscore } from "@/idlTypes/idlType";

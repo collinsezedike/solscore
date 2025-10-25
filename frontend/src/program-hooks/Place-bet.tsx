@@ -4,6 +4,7 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_I
 import { useMutation } from "@tanstack/react-query";
 import idl from "@/idl/idl.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
+import {Buffer} from "buffer"
 // import { Solscore } from "@/idlTypes/idlType";
 import { toast } from "sonner";
 
