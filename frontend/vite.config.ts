@@ -1,19 +1,19 @@
-import path from "path"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
-import { nodePolyfills } from "vite-plugin-node-polyfills"
+import path from "path";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+import inject from "@rollup/plugin-inject";
 
 export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ["buffer", "process", "util", "stream"],
+      include: ["buffer", "process"],
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
-      protocolImports: true, // CRITICAL for production builds
     }),
   ],
   server: {
@@ -23,27 +23,20 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      buffer: "buffer",
-      process: "process/browser",
     },
   },
   define: {
-    "process.env": "{}",
+    "process.env": {},
     global: "globalThis",
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: "globalThis",
-      },
-    },
   },
   build: {
     rollupOptions: {
-      plugins: [],
-    },
-    commonjsOptions: {
-      transformMixedEsModules: true,
+      plugins: [
+        inject({
+          Buffer: ["buffer", "Buffer"],
+          process: ["process", "process"],
+        }),
+      ],
     },
   },
-})
+});
