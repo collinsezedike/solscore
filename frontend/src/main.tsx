@@ -1,9 +1,15 @@
+// main.tsx
+// CRITICAL: Buffer polyfill MUST be the very first import
 import { Buffer } from "buffer";
-if (typeof window !== "undefined") {
-  window.Buffer = Buffer;
-  globalThis.Buffer = Buffer;
-}
+import process from "process";
 
+// Set globals immediately
+window.Buffer = Buffer;
+globalThis.Buffer = Buffer;
+window.process = process;
+globalThis.process = process;
+
+// Now import everything else AFTER Buffer is set
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -17,10 +23,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Providers>
-            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <App />
           <Toaster />
-          </ThemeProvider>
+        </ThemeProvider>
       </Providers>
     </BrowserRouter>
   </StrictMode>
