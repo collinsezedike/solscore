@@ -17,7 +17,7 @@ const carouselData = [
   {
     id: 1,
     gradient: "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500",
-    title: "Bet Smart, Win Big",
+    title: "Bet Smart, Win Big test 1",
     description: "Place your predictions on championship winners. Back your favorite team and earn massive rewards!",
     cta: "Start Betting",
     link: "/markets",
