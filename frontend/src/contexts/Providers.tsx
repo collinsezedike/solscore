@@ -7,7 +7,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReactQueryProvider>
       <ClusterProvider>
-      <WalletAdapterProvider>{children}</WalletAdapterProvider>
+        <WalletAdapterProvider>
+          {children}
+          </WalletAdapterProvider>
       </ClusterProvider>
     </ReactQueryProvider>
   )
