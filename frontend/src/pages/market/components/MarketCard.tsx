@@ -60,8 +60,8 @@ export function MarketCard({ publicKey, account }: MarketCardProps) {
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">Pool:</span>
-            <span className="font-semibold">{maxStakeAmount.toString()} USDC</span>
+            <span className="text-muted-foreground">Max stake:</span>
+            <span className="font-semibold">{(maxStakeAmount/1000000).toString()} USDC</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />

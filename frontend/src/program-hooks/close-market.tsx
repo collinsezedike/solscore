@@ -81,23 +81,19 @@ export const useCloseMarket = () => {
       console.log("Market closed successfully:", tx);
       return tx;
 
-    } catch (error: unknown) {
-      const err = error as Error & { logs?: string[] };
-      console.error("Error closing market:", err);
-      
-      if (err.logs) {
-        console.error("Transaction logs:", err.logs);
-      }
-      
-      // Parse common errors
-      if (err.message.includes("MarketNotResolved")) {
-        throw new Error("Market must be resolved before closing");
-      } else if (err.message.includes("ConstraintHasOne")) {
-        throw new Error("Only the admin can close this market");
-      }
-      
-      throw error;
+    }catch (error: unknown) {
+    const err = error as Error & { 
+        message?: string 
+    };
+    
+    if (err.message?.includes("already been processed")) {
+        console.warn("Transaction was already processed - this might be a false error");
+        // If you know the transaction succeeded, you might want to return a success status
+        return "Transaction completed (already processed)";
     }
+    console.error("Close market failed:", err);
+    throw error; 
+}
   };
 
   const { mutateAsync: executeCloseMarket, data, isPending, isError, error } = useMutation({

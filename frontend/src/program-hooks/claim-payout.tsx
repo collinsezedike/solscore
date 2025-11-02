@@ -90,24 +90,18 @@ export const useClaimPayout = () => {
       return tx;
 
     } catch (error: unknown) {
-      const err = error as Error & { logs?: string[] };
-      console.error("Error claiming payout:", err);
-      
-      if (err.logs) {
-        console.error("Transaction logs:", err.logs);
-      }
-      
-      // Parse common errors
-      if (err.message.includes("MarketNotResolved")) {
-        throw new Error("This market has not been resolved yet");
-      } else if (err.message.includes("BetNotWon")) {
-        throw new Error("Your bet did not win. Only winning bets can claim payouts");
-      } else if (err.message.includes("AccountNotInitialized")) {
-        throw new Error("No bet found for this market");
-      }
-      
-      throw error;
+    const err = error as Error & { 
+        message?: string 
+    };
+    
+    if (err.message?.includes("already been processed")) {
+        console.warn("Transaction was already processed - this might be a false error");
+        // If you know the transaction succeeded, you might want to return a success status
+        return "Transaction completed (already processed)";
     }
+    console.error("Claim payout failed:", err);
+    throw error; 
+}
   };
 
   const { mutateAsync: executeClaimPayout, data, isPending, isError, error } = useMutation({

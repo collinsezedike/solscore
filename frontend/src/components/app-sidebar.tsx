@@ -33,9 +33,7 @@ export function AppSidebar() {
       <Sidebar>
     <SidebarHeader className="border-b border-sidebar-border p-6">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">S</span>
-          </div>
+          <img className="w-10" src="./solscore-logo.jpg" alt="logo" />
           <div>
             <h1 className="text-xl font-bold text-sidebar-foreground">Solscore</h1>
             <p className="text-xs text-sidebar-foreground/60">Football Betting</p>

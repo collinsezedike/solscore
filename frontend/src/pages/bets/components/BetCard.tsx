@@ -90,6 +90,8 @@ export function BetCard({
 
   const config = statusConfig[status];
   const StatusIcon = config.icon;
+
+  // console.log(amount)
   return (
     <Card className="bg-gradient-dark border-border/50 hover:border-primary/50 transition-all">
       <CardHeader>
@@ -116,13 +118,13 @@ export function BetCard({
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Stake Amount</span>
-            <span className="font-semibold">{amount.toString()} USDC</span>
+            <span className="font-semibold">{amount.toFixed(2)}USDC</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Potential Win</span>
             <span className="font-semibold text-primary flex items-center gap-1">
               <TrendingUp className="h-3 w-3" />
-              {payoutAmount.toString()} USDC
+              {payoutAmount.toFixed(2)} USDC
             </span>
           </div>
         </div>
@@ -134,7 +136,7 @@ export function BetCard({
                 Congratulations! 🎉
               </p>
               <p className="text-green-500 font-bold text-lg">
-                +{(payoutAmount).toString()} USDC
+                +{payoutAmount.toFixed(2)} USDC
               </p>
             </div>
             <Button
@@ -150,7 +152,7 @@ export function BetCard({
         {status === 'lost' && (
           <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-center">
             <p className="text-red-500 font-semibold">
-              -{amount.toString()} USDC
+              -{amount.toFixed(2)} USDC
             </p>
           </div>
         )}

@@ -59,17 +59,17 @@ export const usePlaceBet = () => {
         userAddressPubKey
       );
 
-      console.log("Bet PDA:", betPDA.toBase58());
-      console.log("Market PDA:", marketPDA.toBase58());
-      console.log("Vault:", vault.toBase58());
-      console.log("User Token Account:", userTokenAccount.toBase58());
+      // console.log("Bet PDA:", betPDA.toBase58());
+      // console.log("Market PDA:", marketPDA.toBase58());
+      // console.log("Vault:", vault.toBase58());
+      // console.log("User Token Account:", userTokenAccount.toBase58());
 
       // Convert amount from SOL to lamports (assuming 6 decimals for SPL token)
     //   const amountInLamports = new BN(amount * 1_000_000);
     //   const teamIndexBN = teamIndex; // Keep as number, Anchor will convert
 
-        console.log(amount);
-        console.log(teamIndex)
+        // console.log(amount);
+        // console.log(teamIndex)
 
       const tx = await program.methods
         .placeBet(new BN(teamIndex), new BN(amount))
@@ -95,28 +95,18 @@ export const usePlaceBet = () => {
       return tx;
 
     } catch (error: unknown) {
-      const err = error as Error & { logs?: string[] };
-      console.error("Error placing bet:", err);
-      
-      if (err.logs) {
-        console.error("Transaction logs:", err.logs);
-      }
-      
-      // Parse common errors
-      if (err.message.includes("insufficient funds")) {
-        throw new Error("Insufficient balance in your token account");
-      } else if (err.message.includes("MarketResolved")) {
-        throw new Error("This market has already been resolved");
-      } else if (err.message.includes("InvalidBetAmount")) {
-        throw new Error("Invalid bet amount. Check the maximum stake limit");
-      } else if (err.message.includes("MarketAllowedBettorsLimitExceeded")) {
-        throw new Error("Maximum number of bettors reached");
-      } else if (err.message.includes("InvalidTeamIndex")) {
-        throw new Error("Invalid team selection");
-      }
-      
-      throw error;
+    const err = error as Error & { 
+        message?: string 
+    };
+    
+    if (err.message?.includes("already been processed")) {
+        console.warn("Transaction was already processed - this might be a false error");
+        // If you know the transaction succeeded, you might want to return a success status
+        return "Transaction completed (already processed)";
     }
+    console.error("Booking bet failed:", err);
+    throw error; 
+}
   };
 
   const { mutateAsync: executePlaceBet, data, isPending, isError, error } = useMutation({

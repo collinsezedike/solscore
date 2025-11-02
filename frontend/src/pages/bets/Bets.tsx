@@ -18,7 +18,6 @@ const Bets = () => {
     });
     return map;
   }, [markets]);
-
   // Process bets with market data
   const processedBets = useMemo(() => {
     return bets.map((bet) => {
@@ -27,13 +26,13 @@ const Bets = () => {
 
       // Convert BN values to numbers
       const amount = typeof bet.account.amount === 'object' && 'toNumber' in bet.account.amount
-        ? bet.account.amount.toNumber() / 1_000_000
+        ? bet.account.amount.toNumber()/1000000
         : 0;
 
       const payoutAmount = bet.account.payoutAmount && 
         typeof bet.account.payoutAmount === 'object' && 
         'toNumber' in bet.account.payoutAmount
-        ? bet.account.payoutAmount.toNumber() / 1_000_000
+        ? bet.account.payoutAmount.toNumber()/1000000
         : 0;
 
       const timestamp = typeof bet.account.timestamp === 'object' && 'toNumber' in bet.account.timestamp

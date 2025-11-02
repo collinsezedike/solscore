@@ -53,7 +53,7 @@ export const useInitializeMarket = () => {
 
 
       // Convert numbers to BN (BigNumber) 
-      const maxStakeAmountBN = new BN(maxStakeAmount);
+      const maxStakeAmountBN = new BN(maxStakeAmount * 1_000_000);
       const allowedBettorsBN = new BN(allowedBettors);
       
       // Convert odds array to BN array if needed
@@ -87,15 +87,18 @@ await connection.confirmTransaction(
       return tx;
 
     } catch (error: unknown) {
-      const err = error as Error & { logs?: string[] };
-      console.error("Error initializing market:", err);
-      
-      if (err.logs) {
-        console.error("Transaction logs:", err.logs);
-      }
-      
-      throw error;
+    const err = error as Error & { 
+        message?: string 
+    };
+    
+    if (err.message?.includes("already been processed")) {
+        console.warn("Transaction was already processed - this might be a false error");
+        // If you know the transaction succeeded, you might want to return a success status
+        return "Transaction completed (already processed)";
     }
+    console.error("Initialization failed:", err);
+    throw error; 
+}
   };
   
   const { mutateAsync: createMarket, data, isPending } = useMutation({

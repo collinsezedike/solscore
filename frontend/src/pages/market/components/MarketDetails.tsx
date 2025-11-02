@@ -69,19 +69,27 @@ export default function MarketDetails() {
       return;
     }
 
-    if (parseFloat(stakeAmount) > parseFloat(market.account.maxStakeAmount.toString())) {
-      toast.error(`Maximum stake is ${market.account.maxStakeAmount.toString()} SOL`);
-      return;
+   const stakeAmountFloat = parseFloat(stakeAmount);
+  // Divide maxStakeAmount since it's now stored in smallest units
+  const maxStake = parseFloat(market.account.maxStakeAmount.toString()) / 1_000_000;
+
+  if (stakeAmountFloat > maxStake) {
+    toast.error(`Maximum stake is ${maxStake} USDC`);
+    return;
     }
+    
 if (!market || !marketId) {
     toast.error("Market not found");
     return;
   }
-      placeBet({
-  marketPublicKey: marketId,
-  teamIndex: selectedTeam,
-  amount: parseFloat(stakeAmount),
-});
+    // Convert to smallest units before sending
+  const amountInSmallestUnit = Math.floor(stakeAmountFloat * 1_000_000);
+  
+  placeBet({
+    marketPublicKey: marketId,
+    teamIndex: selectedTeam,
+    amount: amountInSmallestUnit,
+  });
   };
 
   const selectedOdd = selectedTeam !== null ? (() => {
@@ -134,7 +142,7 @@ if (!market || !marketId) {
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Max Stake</p>
                   <p className="text-2xl font-bold text-primary">
-                    {market.account.maxStakeAmount.toString()} USDC
+                   {(market.account.maxStakeAmount / 1_000_000).toString()} USDC
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -187,7 +195,7 @@ if (!market || !marketId) {
                           <div className="flex items-center gap-3">
                             <div className={`
                               w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg
-                              ${isSelected ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}
+                              ${isSelected ? 'bg-primary text-black' : 'bg-muted text-muted-foreground'}
                             `}>
                               {index + 1}
                             </div>
@@ -250,7 +258,7 @@ if (!market || !marketId) {
                     type="number"
                     step="0.01"
                     min="0"
-                    max={stakeAmount}
+                    max={(market.account.maxStakeAmount / 1_000_000).toString()}
                     placeholder="0.00"
                     value={stakeAmount}
                     onChange={(e) => setStakeAmount(e.target.value)}
@@ -258,7 +266,7 @@ if (!market || !marketId) {
                     className="text-base"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Max: {market.account.maxStakeAmount.toString()} USDC
+                    Max: {(market.account.maxStakeAmount / 1_000_000).toFixed(2)} USDC
                   </p>
                 </div>
 

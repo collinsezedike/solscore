@@ -60,24 +60,18 @@ export const useResolveMarket = () => {
       return tx;
 
     } catch (error: unknown) {
-      const err = error as Error & { logs?: string[] };
-      console.error("Error resolving market:", err);
-      
-      if (err.logs) {
-        console.error("Transaction logs:", err.logs);
-      }
-      
-      // Parse common errors
-      if (err.message.includes("InvalidTeamIndex")) {
-        throw new Error("Invalid team index selected");
-      } else if (err.message.includes("MarketResolved")) {
-        throw new Error("This market has already been resolved");
-      } else if (err.message.includes("ConstraintHasOne")) {
-        throw new Error("Only the admin can resolve this market");
-      }
-      
-      throw error;
+    const err = error as Error & { 
+        message?: string 
+    };
+    
+    if (err.message?.includes("already been processed")) {
+        console.warn("Transaction was already processed - this might be a false error");
+        // If you know the transaction succeeded, you might want to return a success status
+        return "Transaction completed (already processed)";
     }
+    console.error("Resolve market failed:", err);
+    throw error; 
+}
   };
 
   const { mutateAsync: executeResolveMarket, data, isPending, isError, error } = useMutation({
