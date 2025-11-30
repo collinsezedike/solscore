@@ -1,5 +1,11 @@
-{
-  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/solscore.json`.
+ */
+export type Solscore = {
+  "address": "4g9MJ1aapgPqZXzX1gSdURyYw5prhpRkff6KJ4mfBdnK",
   "metadata": {
     "name": "solscore",
     "version": "0.1.0",
@@ -8,7 +14,7 @@
   },
   "instructions": [
     {
-      "name": "claim_payout",
+      "name": "claimPayout",
       "discriminator": [
         127,
         240,
@@ -39,12 +45,12 @@
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "Market"
+                "account": "market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -60,7 +66,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -131,7 +137,7 @@
           }
         },
         {
-          "name": "user_token_account",
+          "name": "userTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -141,7 +147,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -199,22 +205,22 @@
           "name": "mint"
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "close_market",
+      "name": "closeMarket",
       "discriminator": [
         88,
         154,
@@ -245,12 +251,12 @@
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "Market"
+                "account": "market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -269,7 +275,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -316,7 +322,7 @@
           }
         },
         {
-          "name": "admin_token_account",
+          "name": "adminTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -326,7 +332,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -381,22 +387,22 @@
           ]
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "initialize_market",
+      "name": "initializeMarket",
       "discriminator": [
         35,
         35,
@@ -426,7 +432,7 @@
               },
               {
                 "kind": "arg",
-                "path": "league_name"
+                "path": "leagueName"
               },
               {
                 "kind": "arg",
@@ -446,7 +452,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -501,7 +507,7 @@
           "signer": true
         },
         {
-          "name": "admin_token_account",
+          "name": "adminTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -511,7 +517,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -558,21 +564,21 @@
           }
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "league_name",
+          "name": "leagueName",
           "type": "string"
         },
         {
@@ -592,17 +598,17 @@
           }
         },
         {
-          "name": "max_stake_amount",
+          "name": "maxStakeAmount",
           "type": "u64"
         },
         {
-          "name": "allowed_bettors",
+          "name": "allowedBettors",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "place_bet",
+      "name": "placeBet",
       "discriminator": [
         222,
         62,
@@ -657,12 +663,12 @@
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "Market"
+                "account": "market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -678,7 +684,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -725,7 +731,7 @@
           }
         },
         {
-          "name": "user_token_account",
+          "name": "userTokenAccount",
           "writable": true,
           "pda": {
             "seeds": [
@@ -735,7 +741,7 @@
               },
               {
                 "kind": "account",
-                "path": "token_program"
+                "path": "tokenProgram"
               },
               {
                 "kind": "account",
@@ -790,21 +796,21 @@
           "name": "mint"
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associated_token_program",
+          "name": "associatedTokenProgram",
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "team_index",
+          "name": "teamIndex",
           "type": "u8"
         },
         {
@@ -814,7 +820,7 @@
       ]
     },
     {
-      "name": "resolve_market",
+      "name": "resolveMarket",
       "discriminator": [
         155,
         23,
@@ -845,12 +851,12 @@
               {
                 "kind": "account",
                 "path": "market.league_name",
-                "account": "Market"
+                "account": "market"
               },
               {
                 "kind": "account",
                 "path": "market.season",
-                "account": "Market"
+                "account": "market"
               }
             ]
           }
@@ -864,13 +870,13 @@
           ]
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "winning_team_index",
+          "name": "winningTeamIndex",
           "type": "u8"
         }
       ]
@@ -878,7 +884,7 @@
   ],
   "accounts": [
     {
-      "name": "Bet",
+      "name": "bet",
       "discriminator": [
         147,
         23,
@@ -891,7 +897,7 @@
       ]
     },
     {
-      "name": "Market",
+      "name": "market",
       "discriminator": [
         219,
         190,
@@ -907,63 +913,63 @@
   "errors": [
     {
       "code": 6000,
-      "name": "EmptyTeamsOrOdds",
+      "name": "emptyTeamsOrOdds",
       "msg": "Market teams and odds vectors must not be empty"
     },
     {
       "code": 6001,
-      "name": "TeamsAndOddsLengthMismatch",
+      "name": "teamsAndOddsLengthMismatch",
       "msg": "Market teams and odds vectors must have the same length"
     },
     {
       "code": 6002,
-      "name": "MarketAllowedBettorsLimitExceeded",
+      "name": "marketAllowedBettorsLimitExceeded",
       "msg": "Market cannot accept any more bets"
     },
     {
       "code": 6003,
-      "name": "MarketResolved",
+      "name": "marketResolved",
       "msg": "Market has already been resolved"
     },
     {
       "code": 6004,
-      "name": "MarketNotResolved",
+      "name": "marketNotResolved",
       "msg": "Market has not been resolved"
     },
     {
       "code": 6005,
-      "name": "InvalidBetAmount",
+      "name": "invalidBetAmount",
       "msg": "Bet amount must be greater than zero and less than the market maximum stake amount"
     },
     {
       "code": 6006,
-      "name": "BetNotWon",
+      "name": "betNotWon",
       "msg": "Bet team index does not match market winning team index"
     },
     {
       "code": 6007,
-      "name": "InsufficientBalance",
+      "name": "insufficientBalance",
       "msg": "Insufficient USDC balance"
     },
     {
       "code": 6008,
-      "name": "InvalidTeamIndex",
+      "name": "invalidTeamIndex",
       "msg": "Invalid team index"
     },
     {
       "code": 6009,
-      "name": "MathOverflow",
+      "name": "mathOverflow",
       "msg": "Mathematical overflow"
     },
     {
       "code": 6010,
-      "name": "MathUnderflow",
+      "name": "mathUnderflow",
       "msg": "Mathematical underflow"
     }
   ],
   "types": [
     {
-      "name": "Bet",
+      "name": "bet",
       "type": {
         "kind": "struct",
         "fields": [
@@ -976,7 +982,7 @@
             "type": "pubkey"
           },
           {
-            "name": "team_index",
+            "name": "teamIndex",
             "type": "u8"
           },
           {
@@ -984,7 +990,7 @@
             "type": "u64"
           },
           {
-            "name": "payout_amount",
+            "name": "payoutAmount",
             "type": {
               "option": "u64"
             }
@@ -1001,7 +1007,7 @@
       }
     },
     {
-      "name": "Market",
+      "name": "market",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1010,7 +1016,7 @@
             "type": "pubkey"
           },
           {
-            "name": "league_name",
+            "name": "leagueName",
             "type": "string"
           },
           {
@@ -1030,25 +1036,25 @@
             }
           },
           {
-            "name": "is_resolved",
+            "name": "isResolved",
             "type": "bool"
           },
           {
-            "name": "winning_team_index",
+            "name": "winningTeamIndex",
             "type": {
               "option": "u8"
             }
           },
           {
-            "name": "max_stake_amount",
+            "name": "maxStakeAmount",
             "type": "u64"
           },
           {
-            "name": "allowed_bettors",
+            "name": "allowedBettors",
             "type": "u64"
           },
           {
-            "name": "resolved_at",
+            "name": "resolvedAt",
             "type": {
               "option": "i64"
             }
@@ -1061,4 +1067,4 @@
       }
     }
   ]
-}
+};
